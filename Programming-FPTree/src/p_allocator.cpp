@@ -13,7 +13,7 @@ PAllocator* PAllocator::getAllocator() {
     if (PAllocator::pAllocator == NULL) {
         PAllocator::pAllocator = new PAllocator();
     }
-    return PAllocator::pAllocator;
+    return PAllocator::pAllocator;;
 }
 
 /* data storing structure of allocator
