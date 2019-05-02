@@ -35,25 +35,27 @@ int main()
 
     printf("Load phase begins \n");
     // TODO: read the ycsb_load and store
-    if ((ycsb_load = fopen(load, "r")) = NULL) {
+    ycsb_load = (FILE*)malloc(sizeof(FILE));
+    if ((ycsb_load = fopen(load.c_str(), "r")) == NULL) {
         printf("cannot open file!\n");
         return -1;
     }
-    while (!feof(ycsb_load))  {
-        fgets(buf,1024,ycsb_load);
-        ifInsert[len] = true;
-        key[len] = atoi(buf);
-        printf("%d", key[len]);
-        len++;
+    int i = 0;
+    buf = new char[32];
+    while (fgets(buf,32,ycsb_load) != NULL)  {
+        len = strlen(buf);
+        buf[len] = '\0';
+        ifInsert[i] = true;
+        key[i] = atoll(buf + 7);
+        i++;
     }
 
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // TODO: load the workload in LevelDB
-    int i;
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < READ_WRITE_NUM; i++) {
         if (ifInsert[i]) {
-            status = db->Put(write_options, key[i], key[i]);
+            status = db->Put(write_options, to_string(key[i]), to_string(key[i]));
             assert(status.ok());
             inserted++;
         }
@@ -69,35 +71,41 @@ int main()
     inserted = 0;		
 
     // TODO:read the ycsb_run and store
-    len = 0;
-    if ((ycsb_run = fopen(run, "r")) = NULL) {
+    if ((ycsb_run = fopen(run.c_str(), "r")) == NULL) {
         printf("cannot open file!\n");
         return -1;
     }
-    while (!feof(ycsb_run))  {
-        fgets(buf,1024,ycsb_run);
-        if ((string)buf.find("INSERT") != s.npos)
-            ifInsert[len] = 0;
-        key[len] = atoi(buf);
-        printf("%d", key[len]);
-        len++;
+    i = 0;
+    while (fgets(buf,32,ycsb_run) != NULL)  {
+        len = strlen(buf);
+        buf[len] = '\0';
+        string s = buf;
+        if (s.find("INSERT") == s.npos) {
+            ifInsert[i] = 0;
+            key[i] = atoll(buf + 5);
+        }
+        else {
+            key[i] = atoll(buf + 7);
+        }
+           
         operation_num++;
+        i++; 
     }
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // TODO: operate the levelDB
-    int i;
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < operation_num; i++) {
         if (ifInsert[i]) {
-            status = db->Put(write_options, key[i], key[i]);
+            status = db->Put(write_options, to_string(key[i]), to_string(key[i]));
             assert(status.ok());
             inserted++;
         }
         else {
-            status = db->Get(write_options, key[i], &t);
+            string val;
+            status = db->Get(leveldb::ReadOptions(), to_string(key[i]), &val);
             assert(status.ok());
             queried++;
-        }
+        }    
     }
 
 	clock_gettime(CLOCK_MONOTONIC, &finish);
