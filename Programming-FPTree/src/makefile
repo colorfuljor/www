@@ -27,7 +27,7 @@ CLHASH = clhash.o
 ALL := $(LYCSB) $(YCSB) $(MAIN) $(FPTREE) $(UTILITY) $(PALLOCATOR) $(CLHASH)
 
 #============================TODO: all below============================
-$(MAIN) :
+$(MAIN) : 
 
 $(FPTREE) : 
 
@@ -40,6 +40,9 @@ $(CLHASH) : clhash.c $(HEADER_DIR)/utility/clhash.h
 
 $(BIN):
 	mkdir -p bin
+
+$(LYCSB): lycsb.cpp 
+	$(CXX) $^ $(CXXFLAGS) -lleveldb -lpthread -g -o $@
 
 all : $(ALL)
 
