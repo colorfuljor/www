@@ -108,7 +108,7 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
 
 bool PAllocator::ifLeafUsed(PPointer p) {
     // TODO:finished
-    return !ifLeafFree(p) && ifLeafExist(p);
+    return !ifLeafFree(p) && ifLeafExist(p);;
 }
 
 bool PAllocator::ifLeafFree(PPointer p) {
