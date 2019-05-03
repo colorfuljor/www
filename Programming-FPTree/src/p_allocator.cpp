@@ -153,7 +153,7 @@ bool PAllocator::persistCatalog() {
 bool PAllocator::newLeafGroup() {
     // TODO:
     string fileIdPath=DATA_DIR + to_string(maxFileId);
-    ofstream leafGroup(fileIdPath,ios::in|ios::binary);
+    ofstream leafGroup(fileIdPath,ios::out|ios::binary);
     if(leafGroup.is_open())
     {
         maxFileId++;
