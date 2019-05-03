@@ -68,8 +68,19 @@ PAllocator::~PAllocator() {
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
 void PAllocator::initFilePmemAddr() {
     // TODO:
-    uint64_t i = startLeaf;
-    for ()
+    for(uint64_t i = 1; i < maxFileId; i++)
+    {
+        // size_t mapped_len;
+        // int is_pmem;
+        size_t len =8+16+LEAF_GROUP_AMOUNT*(LEAF_DEGREE*(1+8+16+16));
+        string fileIdPath=DATA_DIR + to_string(i);
+        if ((fId2PmAddr[i] = (char*)pmem_map_file(fileIdPath.c_str(), 
+           len, PMEM_FILE_CREATE,0666,NULL, NULL)) == NULL) 
+        {
+		    perror("pmem_map_file");
+		    exit(1);
+	    }
+    }
 }
 
 // get the pmem address of the target PPointer from the map fId2PmAddr
