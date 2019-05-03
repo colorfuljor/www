@@ -46,16 +46,15 @@ PAllocator::PAllocator() {
         // not exist, create catalog and free_list file, then open.
         // TODO:finished
         // printf("not exist\n");
-        ofstream fcreate;
+        ofstream catalog(allocatorCatalogPath, ios::out);
+        ofstream freelist(freeListPath, ios::out);
         //创建catalog file
-        fcreate.open(allocatorCatalogPath);
-        fcreate.close();
+        catalog.close();
         //创建freeList file
-        fcreate.open(freeListPath);
-        fcreate.close();
+        freelist.close();
         //以读的方式打开文件
-        allocatorCatalog.open(allocatorCatalogPath, ios::in|ios::binary);
-        freeListFile.open(freeListPath, ios::in|ios::binary);
+        // allocatorCatalog.open(allocatorCatalogPath, ios::in|ios::binary);
+        // freeListFile.open(freeListPath, ios::in|ios::binary);
         //初始化变量
         maxFileId = 1;
         freeNum = 0;
