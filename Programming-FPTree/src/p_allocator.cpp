@@ -98,7 +98,11 @@ char* PAllocator::getLeafPmemAddr(PPointer p) {
 // return 
 bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
     // TODO:
-
+    if (p.fileId <=maxFileId && p.fileId != ILLEGAL_FILE_ID)
+    {
+        pmem_addr = fId2PmAddr[p.fileId]+p.offset;
+        return true;
+    }   
     return false;
 }
 
