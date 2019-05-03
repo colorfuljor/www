@@ -27,19 +27,23 @@ CLHASH = clhash.o
 ALL := $(LYCSB) $(YCSB) $(MAIN) $(FPTREE) $(UTILITY) $(PALLOCATOR) $(CLHASH)
 
 #============================TODO: all below============================
-$(MAIN) :
+$(MAIN) : 
 
 $(FPTREE) : 
 
 $(UTILITY) :
 
-$(PALLOCATOR) : 
+$(PALLOCATOR) : p_allocator.cpp $(HEADER_DIR)/utility/p_allocator.h
+	$(CXX) $^ $(CXXFLAGS) -I $(HEADER_DIR) -g -o $@
 
 $(CLHASH) : clhash.c $(HEADER_DIR)/utility/clhash.h
 	$(CC) $(CFLAGS) -c clhash.c -I $(HEADER_DIR) -g -o $@
 
 $(BIN):
 	mkdir -p bin
+
+$(LYCSB): lycsb.cpp 
+	$(CXX) $^ $(CXXFLAGS) -lleveldb -lpthread -g -o $@
 
 all : $(ALL)
 

@@ -30,59 +30,86 @@ PAllocator::PAllocator() {
     // judge if the catalog exists
     if (allocatorCatalog.is_open() && freeListFile.is_open()) {
         // exist
-        // TODO
+        // TODO:
+        printf("exist\n");
+        //读取catalog file
+        allocatorCatalog.read((char *)(&maxFileId), sizeof(maxFileId));
+        allocatorCatalog.read((char *)(&freeNum), sizeof(freeNum));
+        allocatorCatalog.read((char *)(&startLeaf), sizeof(startLeaf));
+        //读取freelist file
+        while(!freeListFile.eof()) {
+            PPointer buf;
+            allocatorCatalog.read((char *)(&buf), sizeof(buf));
+            freeList.push_back(buf);
+        }
     } else {
         // not exist, create catalog and free_list file, then open.
-        // TODO
+        // TODO:
+        printf("not exist\n");
+        ofstream fcreate;
+        //创建catalog file
+        fcreate.open(allocatorCatalogPath);
+        fcreate.close();
+        //创建freeList file
+        fcreate.open(freeListPath);
+        createFile.close();
+        //以读的方式打开文件
+        allocatorCatalog.open(allocatorCatalogPath, ios::in|ios::binary);
+        freeListFile.open(freeListPath, ios::in|ios::binary);
     }
     this->initFilePmemAddr();
 }
 
 PAllocator::~PAllocator() {
-    // TODO
+    // TODO:
+    persistCatalog();
 }
 
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
 void PAllocator::initFilePmemAddr() {
-    // TODO
+    // TODO:
+    uint64_t i = startLeaf;
+    for ()
 }
 
 // get the pmem address of the target PPointer from the map fId2PmAddr
 char* PAllocator::getLeafPmemAddr(PPointer p) {
-    // TODO
+    // TODO:
+    if (p.field < maxFileId && p.field != ILLEGAL_FILE_ID)
+        return fId2PmAddr.find(p.field)->second;
     return NULL;
 }
 
 // get and use a leaf for the fptree leaf allocation
 // return 
 bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
-    // TODO
+    // TODO:
     return false;
 }
 
 bool PAllocator::ifLeafUsed(PPointer p) {
-    // TODO
+    // TODO:
     return false;
 }
 
 bool PAllocator::ifLeafFree(PPointer p) {
-    // TODO
+    // TODO:
     return false;
 }
 
 // judge whether the leaf with specific PPointer exists. 
 bool PAllocator::ifLeafExist(PPointer p) {
-    // TODO
+    // TODO:
 }
 
 // free and reuse a leaf
 bool PAllocator::freeLeaf(PPointer p) {
-    // TODO
+    // TODO:
     return false;
 }
 
 bool PAllocator::persistCatalog() {
-    // TODO
+    // TODO:
     return false;
 }
 
@@ -92,6 +119,6 @@ bool PAllocator::persistCatalog() {
 */
 // create a new leafgroup, one file per leafgroup
 bool PAllocator::newLeafGroup() {
-    // TODO
+    // TODO:
     return false;
 }
