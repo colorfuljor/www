@@ -90,7 +90,7 @@ void PAllocator::initFilePmemAddr() {
 char* PAllocator::getLeafPmemAddr(PPointer p) {
     // TODO:finshed
     if (p.fileId <=maxFileId && p.fileId != ILLEGAL_FILE_ID)
-        return fId2PmAddr[p.fileId]+p.offset;
+        return fId2PmAddr[p.fileId];
     return NULL;
 }
 
