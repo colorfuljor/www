@@ -5,7 +5,7 @@
 #define VALUE_LEN 8
 using namespace std;
 
-const string workload = "../workloads/";
+const string workload = "Programming-FPTree/workloads/";
 
 const string load = workload + "220w-rw-50-50-load.txt"; // TODO: the workload_load filename
 const string run  = workload + "220w-rw-50-50-run.txt"; // TODO: the workload_run filename
@@ -40,19 +40,20 @@ int main()
         printf("cannot open file!\n");
         return -1;
     }
-    int i = 0;
+
     buf = new char[32];
     while (fgets(buf,32,ycsb_load) != NULL)  {
         len = strlen(buf);
         buf[len] = '\0';
-        ifInsert[i] = true;
-        key[i] = atoll(buf + 7);
-        i++;
+        ifInsert[t] = true;
+        key[t] = atoll(buf + 7);
+        t++;
     }
 
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // TODO: load the workload in LevelDB
+    int i;
     for (i = 0; i < READ_WRITE_NUM; i++) {
         if (ifInsert[i]) {
             status = db->Put(write_options, to_string(key[i]), to_string(key[i]));
@@ -63,7 +64,7 @@ int main()
     clock_gettime(CLOCK_MONOTONIC, &finish);
 	single_time = (finish.tv_sec - start.tv_sec) * 1000000000.0 + (finish.tv_nsec - start.tv_nsec);
 
-    printf("Load phase finishes: %d items are inserted \n", inserted);
+    printf("Load phase finishes: %lu items are inserted \n", inserted);
     printf("Load phase used time: %fs\n", single_time / 1000000000.0);
     printf("Load phase single insert time: %fns\n", single_time / inserted);
 
@@ -75,21 +76,21 @@ int main()
         printf("cannot open file!\n");
         return -1;
     }
-    i = 0;
+    t = 0;
     while (fgets(buf,32,ycsb_run) != NULL)  {
         len = strlen(buf);
         buf[len] = '\0';
         string s = buf;
         if (s.find("INSERT") == s.npos) {
-            ifInsert[i] = 0;
-            key[i] = atoll(buf + 5);
+            ifInsert[t] = 0;
+            key[t] = atoll(buf + 5);
         }
         else {
-            key[i] = atoll(buf + 7);
+            key[t] = atoll(buf + 7);
         }
            
         operation_num++;
-        i++; 
+        t++; 
     }
     clock_gettime(CLOCK_MONOTONIC, &start);
 
@@ -107,10 +108,9 @@ int main()
             queried++;
         }    
     }
-
 	clock_gettime(CLOCK_MONOTONIC, &finish);
 	single_time = (finish.tv_sec - start.tv_sec) + (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-    printf("Run phase finishes: %d/%d items are inserted/searched\n", operation_num - inserted, inserted);
+    printf("Run phase finishes: %lu/%lu items are inserted/searched\n", inserted, operation_num - inserted);
     printf("Run phase throughput: %f operations per second \n", READ_WRITE_NUM/single_time);	
     return 0;
 }
