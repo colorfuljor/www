@@ -24,7 +24,7 @@ PAllocator* PAllocator::getAllocator() {
 */
 PAllocator::PAllocator() {
     string allocatorCatalogPath = DATA_DIR + P_ALLOCATOR_CATALOG_NAME;
-    string freeListPath         = DATA_DIR + P_ALLOCATOR_FREE_LIST;;
+    string freeListPath         = DATA_DIR + P_ALLOCATOR_FREE_LIST;
     ifstream allocatorCatalog(allocatorCatalogPath, ios::in|ios::binary);
     ifstream freeListFile(freeListPath, ios::in|ios::binary);
     // judge if the catalog exists
@@ -63,12 +63,7 @@ PAllocator::PAllocator() {
 }
 
 PAllocator::~PAllocator() {
-<<<<<<< HEAD
-    // TODO:
-    PAllocator::pAllocator = NULL;
-=======
-    // TODO:finished
->>>>>>> 7aced2d198329da4a7cb9dc9320db3fb47e540d1
+    // TODO:Problem
     persistCatalog();
     //persist freeList
     string freeListPath = DATA_DIR + P_ALLOCATOR_FREE_LIST;
@@ -78,18 +73,23 @@ PAllocator::~PAllocator() {
         PPointer toWrite = freeList[i];
         freelist.write((char *)(&toWrite), sizeof(toWrite)); 
     }
-    pAllocator=NULL;
+    // cout << "xxx" << endl;
+    if (PAllocator::pAllocator != NULL) {
+        
+        // delete PAllocator::pAllocator;
+        PAllocator::pAllocator = NULL;
+    }      
 }
 
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
 void PAllocator::initFilePmemAddr() {
-    // TODO:
+    // TODO:finished
     for(uint64_t i = 1; i < maxFileId; i++)
     {
         // size_t mapped_len;
         // int is_pmem;
-        size_t len = LEAF_GROUP_HEAD+LEAF_GROUP_AMOUNT*calLeafSize();
-        string fileIdPath = DATA_DIR + to_string(i);
+        size_t len =LEAF_GROUP_HEAD+LEAF_GROUP_AMOUNT*calLeafSize();
+        string fileIdPath=DATA_DIR + to_string(i);
         if ((fId2PmAddr[i] = (char*)pmem_map_file(fileIdPath.c_str(), 
            len, PMEM_FILE_CREATE,0666,NULL, NULL)) == NULL) 
         {
@@ -101,7 +101,7 @@ void PAllocator::initFilePmemAddr() {
 
 // get the pmem address of the target PPointer from the map fId2PmAddr
 char* PAllocator::getLeafPmemAddr(PPointer p) {
-    // TODO:
+    // TODO:finished
     if (p.fileId <=maxFileId && p.fileId != ILLEGAL_FILE_ID)
         return fId2PmAddr[p.fileId]+p.offset;
     return NULL;
@@ -110,12 +110,13 @@ char* PAllocator::getLeafPmemAddr(PPointer p) {
 // get and use a leaf for the fptree leaf allocation
 // return 
 bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
-    // TODO:
+    // TODO:finished
     if (freeList.empty())
         newLeafGroup();
     p = freeList.back();
     freeList.pop_back();
     pmem_addr = getLeafPmemAddr(p);
+    freeNum--;
     string path=DATA_DIR + to_string(p.fileId);
     fstream leafGroup(path,ios::in|ios::out|ios::binary);
     uint64_t usedNum ;
@@ -133,11 +134,7 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
 
 bool PAllocator::ifLeafUsed(PPointer p) {
     // TODO:finished
-<<<<<<< HEAD
-    return !ifLeafFree(p) && ifLeafExist(p);;
-=======
     return ifLeafExist(p) && !ifLeafFree(p);
->>>>>>> 7aced2d198329da4a7cb9dc9320db3fb47e540d1
 }
 
 bool PAllocator::ifLeafFree(PPointer p) {
@@ -162,8 +159,22 @@ bool PAllocator::ifLeafExist(PPointer p) {
 
 // free and reuse a leaf
 bool PAllocator::freeLeaf(PPointer p) {
-    // TODO:
-    return false;
+    // TODO:finished
+    Byte bit = 0;
+    uint64_t usedNum;
+    string path = DATA_DIR + to_string(p.fileId);
+    fstream in(path, ios::binary|ios::out|ios::in);
+    if (!in.good()) 
+        return false;
+    in.read((char*)&(usedNum), sizeof(uint64_t));
+    usedNum--;
+    in.seekg(0,ios::beg);
+    in.write((char*)&(usedNum), sizeof(uint64_t));
+    in.seekg(sizeof(uint64_t) + ((p.offset - LEAF_GROUP_HEAD) / calLeafSize()), ios::beg);
+    in.write((char*)&(bit), sizeof(Byte));
+    freeList.push_back(p);
+    freeNum++;
+    return true;
 }
 
 bool PAllocator::persistCatalog() {
@@ -184,7 +195,7 @@ bool PAllocator::persistCatalog() {
 */
 // create a new leafgroup, one file per leafgroup
 bool PAllocator::newLeafGroup() {
-    // TODO:
+    // TODO:finished
     string fileIdPath=DATA_DIR + to_string(maxFileId);
     ofstream leafGroup(fileIdPath,ios::out|ios::binary);
     if(leafGroup.is_open())
