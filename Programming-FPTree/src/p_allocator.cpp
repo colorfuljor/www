@@ -24,7 +24,7 @@ PAllocator* PAllocator::getAllocator() {
 */
 PAllocator::PAllocator() {
     string allocatorCatalogPath = DATA_DIR + P_ALLOCATOR_CATALOG_NAME;
-    string freeListPath         = DATA_DIR + P_ALLOCATOR_FREE_LIST;
+    string freeListPath         = DATA_DIR + P_ALLOCATOR_FREE_LIST;;
     ifstream allocatorCatalog(allocatorCatalogPath, ios::in|ios::binary);
     ifstream freeListFile(freeListPath, ios::in|ios::binary);
     // judge if the catalog exists
