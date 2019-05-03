@@ -57,7 +57,7 @@ PAllocator::PAllocator() {
         allocatorCatalog.open(allocatorCatalogPath, ios::in|ios::binary);
         freeListFile.open(freeListPath, ios::in|ios::binary);
         //初始化变量
-        maxFileId = 0;
+        maxFileId = 1;
         freeNum = 0;
     }
     this->initFilePmemAddr();
@@ -71,7 +71,7 @@ PAllocator::~PAllocator() {
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
 void PAllocator::initFilePmemAddr() {
     // TODO:
-    for(uint64_t i = 1; i <= maxFileId; i++)
+    for(uint64_t i = 1; i < maxFileId; i++)
     {
         // size_t mapped_len;
         // int is_pmem;
@@ -88,9 +88,9 @@ void PAllocator::initFilePmemAddr() {
 
 // get the pmem address of the target PPointer from the map fId2PmAddr
 char* PAllocator::getLeafPmemAddr(PPointer p) {
-    // TODO:finshed
+    // TODO:
     if (p.fileId <=maxFileId && p.fileId != ILLEGAL_FILE_ID)
-        return fId2PmAddr[p.fileId]+p.offset;
+        return fId2PmAddr[p.fileId];
     return NULL;
 }
 
@@ -115,7 +115,7 @@ bool PAllocator::ifLeafFree(PPointer p) {
     // TODO:finished
     if (!ifLeafExist(p)) return false;
     for (auto iter = freeList.cbegin(); iter != freeList.cbegin(); iter++) {
-        if (p == *iter) return true;
+        if (*iter == p) return true;
     }
     return false;
 }
@@ -153,7 +153,7 @@ bool PAllocator::persistCatalog() {
 // create a new leafgroup, one file per leafgroup
 bool PAllocator::newLeafGroup() {
     // TODO:
-    string fileIdPath=DATA_DIR + to_string(maxFileId+1);
+    string fileIdPath=DATA_DIR + to_string(maxFileId);
     ofstream leafGroup(fileIdPath,ios::in|ios::binary);
     if(leafGroup.is_open())
     {
