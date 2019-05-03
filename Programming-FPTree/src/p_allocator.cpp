@@ -170,34 +170,18 @@ bool PAllocator::newLeafGroup() {
     if(leafGroup.is_open())
     {
         uint64_t usedNum = 0;
-<<<<<<< HEAD
-        uint8_t bitmap[LEAF_GROUP_AMOUNT*(1+calLeafSize())]={0};    
-        leafGroup.write((char*)&usedNum,sizeof(usedNum));
-        leafGroup.write((char*)&bitmap,sizeof(bitmap));        
-        int i;
-        for(i = 0; i< LEAF_GROUP_AMOUNT;i++)
-        {
-=======
         uint8_t bitmap[LEAF_GROUP_AMOUNT*(1+calLeafSize())] = 0;        
         leafGroup.write((char*)&usedNum,sizeof(usedNum));
         leafGroup.write((char*)&bitmap,sizeof(bitmap));
         int i = 0;
         for (i = 0; i < LEAF_GROUP_AMOUNT; i++) {
->>>>>>> 4dd7025f1fd3f4f15892015a33bf4f9ae7f84e23
             PPointer p;
             p.fileId = maxFileId;
             p.offset = LEAF_GROUP_HEAD + i * calLeafSize();
             freeList.push_back(p);
-<<<<<<< HEAD
-        }
-           
-        freeNum += LEAF_GROUP_AMOUNT;
-        maxFileId++;
-=======
         } 
         freeNum += LEAF_GROUP_AMOUNT;   
         maxFileId++;    
->>>>>>> 4dd7025f1fd3f4f15892015a33bf4f9ae7f84e23
         return true;
     }
     return false;
