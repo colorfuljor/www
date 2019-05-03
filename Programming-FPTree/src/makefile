@@ -34,7 +34,7 @@ $(FPTREE) :
 $(UTILITY) :
 
 $(PALLOCATOR) : p_allocator.cpp $(HEADER_DIR)/utility/p_allocator.h
-	$(CXX) $^ $(CXXFLAGS) -I $(HEADER_DIR) -g -o $@
+	$(CXX) $^ $(CXXFLAGS) -I $(HEADER_DIR) -lpmem -g -o $@
 
 $(CLHASH) : clhash.c $(HEADER_DIR)/utility/clhash.h
 	$(CC) $(CFLAGS) -c clhash.c -I $(HEADER_DIR) -g -o $@

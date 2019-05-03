@@ -52,7 +52,7 @@ PAllocator::PAllocator() {
         fcreate.close();
         //创建freeList file
         fcreate.open(freeListPath);
-        createFile.close();
+        fcreate.close();
         //以读的方式打开文件
         allocatorCatalog.open(allocatorCatalogPath, ios::in|ios::binary);
         freeListFile.open(freeListPath, ios::in|ios::binary);
@@ -89,8 +89,8 @@ void PAllocator::initFilePmemAddr() {
 // get the pmem address of the target PPointer from the map fId2PmAddr
 char* PAllocator::getLeafPmemAddr(PPointer p) {
     // TODO:
-    if (p.field < maxFileId && p.field != ILLEGAL_FILE_ID)
-        return fId2PmAddr.find(p.field)->second;
+    if (p.fileId < maxFileId && p.fileId != ILLEGAL_FILE_ID)
+        return fId2PmAddr.find(p.fileId)->second;
     return NULL;
 }
 
@@ -104,14 +104,14 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
 
 bool PAllocator::ifLeafUsed(PPointer p) {
     // TODO:finished
-    retern !ifLeafFree(p) && ifLeafExist(P);
+    return !ifLeafFree(p) && ifLeafExist(p);
 }
 
 bool PAllocator::ifLeafFree(PPointer p) {
     // TODO:finished
     if (!ifLeafExist(p)) return false;
     for (auto iter = freeList.cbegin(); iter != freeList.cbegin(); iter++) {
-        if (*iter == p) return true;
+        if (p == *iter) return true;
     }
     return false;
 }
@@ -119,7 +119,7 @@ bool PAllocator::ifLeafFree(PPointer p) {
 // judge whether the leaf with specific PPointer exists. 
 bool PAllocator::ifLeafExist(PPointer p) {
     // TODO:finished
-    if (p.field <= maxFileId && p.field != ILLEGAL_FILE_ID)
+    if (p.fileId <= maxFileId && p.fileId != ILLEGAL_FILE_ID)
         return true;
     return false;
 }
@@ -132,7 +132,8 @@ bool PAllocator::freeLeaf(PPointer p) {
 
 bool PAllocator::persistCatalog() {
     // TODO:finished
-    ofstream allocatorCatalog(allocatorCatalogPath, ios::out|ios::binary)
+    string allocatorCatalogPath = DATA_DIR + P_ALLOCATOR_CATALOG_NAME;
+    ofstream allocatorCatalog(allocatorCatalogPath, ios::out|ios::binary);
     if (!allocatorCatalog)
         return false;
     allocatorCatalog.write((char *)(&maxFileId), sizeof(maxFileId));
