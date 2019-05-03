@@ -63,8 +63,15 @@ PAllocator::PAllocator() {
 }
 
 PAllocator::~PAllocator() {
-    // TODO:
+    // TODO:finished
     persistCatalog();
+    //persist freeList
+    ofstream freelist(freeListPath, ios::out|ios::binary);
+    uint64_t i;
+    for (i = 0; i < freeNum; i++) {
+        PPointer toWrite = freeList[i];
+        freelist.write((char *)(&toWrite), sizeof(toWrite)); 
+    }
 }
 
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
@@ -88,7 +95,7 @@ void PAllocator::initFilePmemAddr() {
 // get the pmem address of the target PPointer from the map fId2PmAddr
 char* PAllocator::getLeafPmemAddr(PPointer p) {
     // TODO:
-    if (p.fileId <=maxFileId && p.fileId != ILLEGAL_FILE_ID)
+    if (p.fileId <maxFileId && p.fileId != ILLEGAL_FILE_ID)
         return fId2PmAddr[p.fileId];
     return NULL;
 }
@@ -107,22 +114,25 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
 
 bool PAllocator::ifLeafUsed(PPointer p) {
     // TODO:finished
-    return !ifLeafFree(p) && ifLeafExist(p);
+    return ifLeafExist(p) && !ifLeafFree(p);
 }
 
 bool PAllocator::ifLeafFree(PPointer p) {
     // TODO:finished
     if (!ifLeafExist(p)) return false;
-    for (auto iter = freeList.cbegin(); iter != freeList.cbegin(); iter++) {
-        if (*iter == p) return true;
-    }
-    return false;
+    Byte bit = 0;
+    string path = DATA_DIR + to_string(p.fileId);
+    ifstream in(path, ios::binary|ios::in);
+    in.seekg(sizeof(uint64_t) + ((p.offset - LEAF_GROUP_HEAD) / calLeafSize()), ios::beg);
+    in.read((char*)&(bit), sizeof(Byte));
+    if (bit == 1) return false;
+    return true;
 }
 
 // judge whether the leaf with specific PPointer exists. 
 bool PAllocator::ifLeafExist(PPointer p) {
     // TODO:finished
-    if (p.fileId <= maxFileId && p.fileId != ILLEGAL_FILE_ID)
+    if (p.fileId < maxFileId && p.fileId != ILLEGAL_FILE_ID)
         return true;
     return false;
 }
