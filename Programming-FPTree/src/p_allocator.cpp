@@ -56,6 +56,9 @@ PAllocator::PAllocator() {
         //以读的方式打开文件
         allocatorCatalog.open(allocatorCatalogPath, ios::in|ios::binary);
         freeListFile.open(freeListPath, ios::in|ios::binary);
+        //初始化变量
+        maxFileId = 0;
+        freeNum = 0;
     }
     this->initFilePmemAddr();
 }
@@ -100,18 +103,25 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
 }
 
 bool PAllocator::ifLeafUsed(PPointer p) {
-    // TODO:
-    retern !ifLeafFree
+    // TODO:finished
+    retern !ifLeafFree(p) && ifLeafExist(P);
 }
 
 bool PAllocator::ifLeafFree(PPointer p) {
-    // TODO:
+    // TODO:finished
+    if (!ifLeafExist(p)) return false;
+    for (auto iter = freeList.cbegin(); iter != freeList.cbegin(); iter++) {
+        if (*iter == p) return true;
+    }
     return false;
 }
 
 // judge whether the leaf with specific PPointer exists. 
 bool PAllocator::ifLeafExist(PPointer p) {
-    // TODO:
+    // TODO:finished
+    if (p.field <= maxFileId && p.field != ILLEGAL_FILE_ID)
+        return true;
+    return false;
 }
 
 // free and reuse a leaf
@@ -121,8 +131,14 @@ bool PAllocator::freeLeaf(PPointer p) {
 }
 
 bool PAllocator::persistCatalog() {
-    // TODO:
-    return false;
+    // TODO:finished
+    ofstream allocatorCatalog(allocatorCatalogPath, ios::out|ios::binary)
+    if (!allocatorCatalog)
+        return false;
+    allocatorCatalog.write((char *)(&maxFileId), sizeof(maxFileId));
+    allocatorCatalog.write((char *)(&freeNum), sizeof(freeNum));
+    allocatorCatalog.write((char *)(&startLeaf), sizeof(startLeaf));
+    return true;
 }
 
 /*
