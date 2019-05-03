@@ -66,12 +66,14 @@ PAllocator::~PAllocator() {
     // TODO:finished
     persistCatalog();
     //persist freeList
+    string freeListPath = DATA_DIR + P_ALLOCATOR_FREE_LIST;
     ofstream freelist(freeListPath, ios::out|ios::binary);
     uint64_t i;
     for (i = 0; i < freeNum; i++) {
         PPointer toWrite = freeList[i];
         freelist.write((char *)(&toWrite), sizeof(toWrite)); 
     }
+    pAllocator=NULL;
 }
 
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
@@ -112,12 +114,11 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
     string path=DATA_DIR + to_string(p.fileId);
     fstream leafGroup(path,ios::in|ios::out|ios::binary);
     uint64_t usedNum ;
-    uint8_t bitmap[LEAF_GROUP_AMOUNT]={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+    uint8_t bitmap[LEAF_GROUP_AMOUNT];
     leafGroup.read((char*)&usedNum,sizeof(usedNum));
-    // leafGroup.read((char*)&bitmap,sizeof(bitmap));
+    leafGroup.read((char*)&bitmap,sizeof(bitmap));
     usedNum++;
     bitmap[(p.offset-LEAF_GROUP_HEAD)/calLeafSize()] = 1;
-    //bitmap[sizeof(uint64_t) + (LEAF_GROUP_AMOUNT - 1)]=1;
     leafGroup.seekg(0,ios::beg);
     leafGroup.write((char*)&usedNum,sizeof(usedNum));
     leafGroup.write((char*)&bitmap,sizeof(bitmap));
@@ -180,7 +181,7 @@ bool PAllocator::newLeafGroup() {
     if(leafGroup.is_open())
     {
         uint64_t usedNum = 0;
-        uint8_t bitmap[LEAF_GROUP_AMOUNT*(1+calLeafSize())] = 0;        
+        uint8_t bitmap[LEAF_GROUP_AMOUNT*(1+calLeafSize())] = {0};        
         leafGroup.write((char*)&usedNum,sizeof(usedNum));
         leafGroup.write((char*)&bitmap,sizeof(bitmap));
         int i = 0;
