@@ -13,7 +13,7 @@ PAllocator* PAllocator::getAllocator() {
     if (PAllocator::pAllocator == NULL) {
         PAllocator::pAllocator = new PAllocator();
     }
-    return PAllocator::pAllocator;;
+    return PAllocator::pAllocator;
 }
 
 /* data storing structure of allocator
@@ -64,6 +64,7 @@ PAllocator::PAllocator() {
 
 PAllocator::~PAllocator() {
     // TODO:
+    PAllocator::pAllocator = NULL;
     persistCatalog();
 }
 
@@ -74,8 +75,8 @@ void PAllocator::initFilePmemAddr() {
     {
         // size_t mapped_len;
         // int is_pmem;
-        size_t len =LEAF_GROUP_HEAD+LEAF_GROUP_AMOUNT*calLeafSize();
-        string fileIdPath=DATA_DIR + to_string(i);
+        size_t len = LEAF_GROUP_HEAD+LEAF_GROUP_AMOUNT*calLeafSize();
+        string fileIdPath = DATA_DIR + to_string(i);
         if ((fId2PmAddr[i] = (char*)pmem_map_file(fileIdPath.c_str(), 
            len, PMEM_FILE_CREATE,0666,NULL, NULL)) == NULL) 
         {
