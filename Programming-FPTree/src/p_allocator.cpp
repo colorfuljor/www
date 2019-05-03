@@ -56,9 +56,6 @@ PAllocator::PAllocator() {
         //以读的方式打开文件
         allocatorCatalog.open(allocatorCatalogPath, ios::in|ios::binary);
         freeListFile.open(freeListPath, ios::in|ios::binary);
-        //初始化变量
-        maxFileId = 0;
-        freeNum = 0;
     }
     this->initFilePmemAddr();
 }
@@ -71,6 +68,8 @@ PAllocator::~PAllocator() {
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
 void PAllocator::initFilePmemAddr() {
     // TODO:
+    uint64_t i = startLeaf;
+    for ()
 }
 
 // get the pmem address of the target PPointer from the map fId2PmAddr
@@ -90,25 +89,18 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
 }
 
 bool PAllocator::ifLeafUsed(PPointer p) {
-    // TODO:finished
-    retern !ifLeafFree(p) && ifLeafExist(P);
+    // TODO:
+    retern !ifLeafFree
 }
 
 bool PAllocator::ifLeafFree(PPointer p) {
-    // TODO:finished
-    if (!ifLeafExist(p)) return false;
-    for (auto iter = freeList.cbegin(); iter != freeList.cbegin(); iter++) {
-        if (*iter == p) return true;
-    }
+    // TODO:
     return false;
 }
 
 // judge whether the leaf with specific PPointer exists. 
 bool PAllocator::ifLeafExist(PPointer p) {
-    // TODO:finished
-    if (p.field <= maxFileId && p.field != ILLEGAL_FILE_ID)
-        return true;
-    return false;
+    // TODO:
 }
 
 // free and reuse a leaf
@@ -118,14 +110,8 @@ bool PAllocator::freeLeaf(PPointer p) {
 }
 
 bool PAllocator::persistCatalog() {
-    // TODO:finished
-    ofstream allocatorCatalog(allocatorCatalogPath, ios::out|ios::binary)
-    if (!allocatorCatalog)
-        return false;
-    allocatorCatalog.write((char *)(&maxFileId), sizeof(maxFileId));
-    allocatorCatalog.write((char *)(&freeNum), sizeof(freeNum));
-    allocatorCatalog.write((char *)(&startLeaf), sizeof(startLeaf));
-    return true;
+    // TODO:
+    return false;
 }
 
 /*
