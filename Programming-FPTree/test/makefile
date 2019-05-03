@@ -102,7 +102,7 @@ clhash.o : $(USER_DIR)/clhash.c $(USER_HEADER_DIR)/utility/clhash.h
 
 # utility test
 $(UTILITY_TEST) : utility.o p_allocator.o clhash.o utility_test.o 
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -L$(GTEST_LIB_DIR) -lgtest_main -lpthread $^ -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -L$(GTEST_LIB_DIR) -lgtest_main -lpthread $^ -o $@ -lpmem
 
 utility_test.o : utility_test.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I $(USER_HEADER_DIR) -c utility_test.cpp
@@ -115,3 +115,5 @@ fptree_test.o : fptree_test.cpp
 
 $(BIN):
 	mkdir -p bin
+
+utility_test:$(GTEST_LIBS)  $(UTILITY_TEST)
