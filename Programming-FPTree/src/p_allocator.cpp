@@ -30,8 +30,8 @@ PAllocator::PAllocator() {
     // judge if the catalog exists
     if (allocatorCatalog.is_open() && freeListFile.is_open()) {
         // exist
-        // TODO:
-        printf("exist\n");
+        // TODO:finished
+        // printf("exist\n");
         //读取catalog file
         allocatorCatalog.read((char *)(&maxFileId), sizeof(maxFileId));
         allocatorCatalog.read((char *)(&freeNum), sizeof(freeNum));
@@ -44,8 +44,8 @@ PAllocator::PAllocator() {
         }
     } else {
         // not exist, create catalog and free_list file, then open.
-        // TODO:
-        printf("not exist\n");
+        // TODO:finished
+        // printf("not exist\n");
         ofstream fcreate;
         //创建catalog file
         fcreate.open(allocatorCatalogPath);
@@ -84,12 +84,13 @@ char* PAllocator::getLeafPmemAddr(PPointer p) {
 // return 
 bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
     // TODO:
+
     return false;
 }
 
 bool PAllocator::ifLeafUsed(PPointer p) {
     // TODO:
-    return false;
+    retern !ifLeafFree
 }
 
 bool PAllocator::ifLeafFree(PPointer p) {
