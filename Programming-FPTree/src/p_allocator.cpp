@@ -95,8 +95,8 @@ void PAllocator::initFilePmemAddr() {
 // get the pmem address of the target PPointer from the map fId2PmAddr
 char* PAllocator::getLeafPmemAddr(PPointer p) {
     // TODO:
-    if (p.fileId <maxFileId && p.fileId != ILLEGAL_FILE_ID)
-        return fId2PmAddr[p.fileId];
+    if (p.fileId <=maxFileId && p.fileId != ILLEGAL_FILE_ID)
+        return fId2PmAddr[p.fileId]+p.offset;
     return NULL;
 }
 
@@ -104,12 +104,25 @@ char* PAllocator::getLeafPmemAddr(PPointer p) {
 // return 
 bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
     // TODO:
-    if (p.fileId <=maxFileId && p.fileId != ILLEGAL_FILE_ID)
-    {
-        pmem_addr = fId2PmAddr[p.fileId]+p.offset;
-        return true;
-    }   
-    return false;
+    if (freeList.empty())
+        newLeafGroup();
+    p = freeList.back();
+    freeList.pop_back();
+    pmem_addr = getLeafPmemAddr(p);
+    string path=DATA_DIR + to_string(p.fileId);
+    fstream leafGroup(path,ios::in|ios::out|ios::binary);
+    uint64_t usedNum ;
+    uint8_t bitmap[LEAF_GROUP_AMOUNT]={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+    leafGroup.read((char*)&usedNum,sizeof(usedNum));
+    // leafGroup.read((char*)&bitmap,sizeof(bitmap));
+    usedNum++;
+    bitmap[(p.offset-LEAF_GROUP_HEAD)/calLeafSize()] = 1;
+    //bitmap[sizeof(uint64_t) + (LEAF_GROUP_AMOUNT - 1)]=1;
+    leafGroup.seekg(0,ios::beg);
+    leafGroup.write((char*)&usedNum,sizeof(usedNum));
+    leafGroup.write((char*)&bitmap,sizeof(bitmap));
+    
+    return true;
 }
 
 bool PAllocator::ifLeafUsed(PPointer p) {
