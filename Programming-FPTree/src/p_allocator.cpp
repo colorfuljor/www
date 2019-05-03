@@ -71,11 +71,11 @@ PAllocator::~PAllocator() {
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
 void PAllocator::initFilePmemAddr() {
     // TODO:
-    for(uint64_t i = 1; i < maxFileId; i++)
+    for(uint64_t i = 1; i <= maxFileId; i++)
     {
         // size_t mapped_len;
         // int is_pmem;
-        size_t len =8+16+LEAF_GROUP_AMOUNT*(LEAF_DEGREE*(1+8+16+16));
+        size_t len =LEAF_GROUP_HEAD+LEAF_GROUP_AMOUNT*calLeafSize();
         string fileIdPath=DATA_DIR + to_string(i);
         if ((fId2PmAddr[i] = (char*)pmem_map_file(fileIdPath.c_str(), 
            len, PMEM_FILE_CREATE,0666,NULL, NULL)) == NULL) 
@@ -89,8 +89,8 @@ void PAllocator::initFilePmemAddr() {
 // get the pmem address of the target PPointer from the map fId2PmAddr
 char* PAllocator::getLeafPmemAddr(PPointer p) {
     // TODO:
-    if (p.field < maxFileId && p.field != ILLEGAL_FILE_ID)
-        return fId2PmAddr.find(p.field)->second;
+    if (p.fileId <=maxFileId && p.fileId != ILLEGAL_FILE_ID)
+        return fId2PmAddr[p.fileId]+p.offset;
     return NULL;
 }
 
@@ -148,5 +148,16 @@ bool PAllocator::persistCatalog() {
 // create a new leafgroup, one file per leafgroup
 bool PAllocator::newLeafGroup() {
     // TODO:
+    string fileIdPath=DATA_DIR + to_string(maxFileId+1);
+    ofstream leafGroup(fileIdPath,ios::in|ios::binary);
+    if(leafGroup.is_open())
+    {
+        maxFileId++;
+        uint64_t usedNum = 0;
+        char bitmap[LEAF_GROUP_AMOUNT*(1+calLeafSize())]="";        
+        leafGroup.write((char*)&usedNum,sizeof(usedNum));
+        leafGroup.write((char*)&bitmap,sizeof(bitmap));        
+        return true;
+    }
     return false;
 }
