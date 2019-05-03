@@ -156,11 +156,19 @@ bool PAllocator::newLeafGroup() {
     ofstream leafGroup(fileIdPath,ios::out|ios::binary);
     if(leafGroup.is_open())
     {
-        maxFileId++;
         uint64_t usedNum = 0;
-        char bitmap[LEAF_GROUP_AMOUNT*(1+calLeafSize())]="";        
+        uint8_t bitmap[LEAF_GROUP_AMOUNT*(1+calLeafSize())] = 0;        
         leafGroup.write((char*)&usedNum,sizeof(usedNum));
-        leafGroup.write((char*)&bitmap,sizeof(bitmap));        
+        leafGroup.write((char*)&bitmap,sizeof(bitmap));
+        int i = 0;
+        for (i = 0; i < LEAF_GROUP_AMOUNT; i++) {
+            PPointer p;
+            p.fileId = maxFileId;
+            p.offset = LEAF_GROUP_HEAD + i * calLeafSize();
+            freeList.push_back(p);
+        } 
+        freeNum += LEAF_GROUP_AMOUNT;   
+        maxFileId++;    
         return true;
     }
     return false;
