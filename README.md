@@ -16,5 +16,5 @@ DBMS Project
 3. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试
 ## 实现进度
 [2019/5/4]PAllocator.cpp实现、通过utility测试、通过LevelDB测试
-1. LevelDB是google实现的键值数据库。我们需要学会文件读写、调用LevelDB的接口完成相应写入、读取（增删改查）功能。我们通过编写LevelDB.cpp实现将workload中的txt文件转化为键值对，存入到LevelDB中，并对LevelDB功能进行测试。
+1. LevelDB是google实现的键值数据库。我们需要学会文件读写、调用LevelDB的接口完成相应写入、读取（增删改查）功能。我们通过编写lycsb.cpp实现将workload中的txt文件转化为键值对，存入到LevelDB中，并对LevelDB功能进行测试。
 2. PAlloctor是NVM文件管理的主要对象，负责分配LeafNode在NVM的空间，映射数据文件并返回虚拟地址给LeafNode使用。主要实现叶结点的分配、get、free方法，该过程需要使用到PMDK的libpmem库对NVM进行操作。
