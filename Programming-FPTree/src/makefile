@@ -27,14 +27,17 @@ CLHASH = clhash.o
 ALL := $(LYCSB) $(YCSB) $(MAIN) $(FPTREE) $(UTILITY) $(PALLOCATOR) $(CLHASH)
 
 #============================TODO: all below============================
-$(MAIN) : 
+$(MAIN) : main.cpp $(FPTREE) $(UTILITY) $(PALLOCATOR) $(CLHASH) 
+	$(CXX) $(CXXFLAGS) $^ -I $(HEADER_DIR) -g -o $@ -lpmem
 
-$(FPTREE) : 
+$(FPTREE) : fptree.cpp $(FPTREE_HEADER_DIR)/fptree.h
+	$(CXX) $(CXXFLAGS) -c fptree.cpp -I $(HEADER_DIR) -g -o $@ -lpmem
 
-$(UTILITY) :
+$(UTILITY) : utility.cpp $(HEADER_DIR)/utility/utility.h $(HEADER_DIR)/utility/clhash.h
+	$(CXX) $(CXXFLAGS) -c utility.cpp -I $(HEADER_DIR) -g -o $@ -lpmem
 
 $(PALLOCATOR) : p_allocator.cpp $(HEADER_DIR)/utility/p_allocator.h
-	$(CXX) $^ $(CXXFLAGS) -I $(HEADER_DIR) -lpmem -g -o $@
+	$(CXX) $(CXXFLAGS) -c p_allocator.cpp -I $(HEADER_DIR) -g  -o $@ -lpmem
 
 $(CLHASH) : clhash.c $(HEADER_DIR)/utility/clhash.h
 	$(CC) $(CFLAGS) -c clhash.c -I $(HEADER_DIR) -g -o $@
@@ -42,8 +45,11 @@ $(CLHASH) : clhash.c $(HEADER_DIR)/utility/clhash.h
 $(BIN):
 	mkdir -p bin
 
-$(LYCSB): lycsb.cpp 
+$(LYCSB) : lycsb.cpp 
 	$(CXX) $^ $(CXXFLAGS) -lleveldb -lpthread -g -o $@
+
+$(YCSB) : ycsb.cpp $(FPTREE)
+	$(CXX) $^ $(CXXFLAGS) -lleveldb -lpthread -I $(HEADER_DIR) -g -o $@
 
 all : $(ALL)
 
