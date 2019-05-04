@@ -86,13 +86,13 @@ PAllocator::~PAllocator() {
         //if(pAllocator != NULL)
         // delete pAllocator;
         pAllocator=NULL;
-
+  
     
 }
 
 // memory map all leaves to pmem address, storing them in the fId2PmAddr
 void PAllocator::initFilePmemAddr() {
-    // TODO:
+    // TODO:finished
     for(uint64_t i = 1; i < maxFileId; i++)
     {
         // size_t mapped_len;
@@ -110,7 +110,7 @@ void PAllocator::initFilePmemAddr() {
 
 // get the pmem address of the target PPointer from the map fId2PmAddr
 char* PAllocator::getLeafPmemAddr(PPointer p) {
-    // TODO:
+    // TODO:finished
     if (p.fileId <=maxFileId && p.fileId != ILLEGAL_FILE_ID)
         return fId2PmAddr[p.fileId]+p.offset;
     return NULL;
@@ -119,7 +119,7 @@ char* PAllocator::getLeafPmemAddr(PPointer p) {
 // get and use a leaf for the fptree leaf allocation
 // return 
 bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
-    // TODO:
+    // TODO:finished
     if (freeList.empty())
         newLeafGroup();
     p = freeList.back();
@@ -184,7 +184,6 @@ bool PAllocator::freeLeaf(PPointer p) {
     freeList.push_back(p);
     freeNum++;
     return true;
-    return false;
 }
 
 bool PAllocator::persistCatalog() {
