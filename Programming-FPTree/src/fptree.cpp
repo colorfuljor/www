@@ -1,7 +1,7 @@
 #include"fptree/fptree.h"
 
 using namespace std;
-
+PAllocator *pAllocator = PAllocator::getAllocator();
 // Initial the new InnerNode
 InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
     // TODO:
