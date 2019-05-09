@@ -23,7 +23,7 @@ InnerNode::~InnerNode() {
 int InnerNode::findIndex(const Key& k) {
     // TODO:
     int low = 1, high = nKeys, mid;
-    while(low <= high){
+    while(low < high){
         mid = (low + high) / 2;
         if (keys[mid] == k) {
             return mid;
