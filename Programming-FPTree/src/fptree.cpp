@@ -54,7 +54,8 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
     // 1.insertion to the first leaf(only one leaf)
     if (this->isRoot && this->nKeys == 0) {
         // TODO:
-        key[]
+        LeafNode 
+        childrens[1] = ;
         return newChild;
     }
     
