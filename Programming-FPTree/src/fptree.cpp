@@ -5,6 +5,7 @@ using namespace std;
 // Initial the new InnerNode
 InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
     // TODO
+    
 }
 
 // delete the InnerNode
@@ -15,7 +16,16 @@ InnerNode::~InnerNode() {
 // binary search the first key in the innernode larger than input key
 int InnerNode::findIndex(const Key& k) {
     // TODO
-    return 0;
+    int lkey = 0, rkey = nKeys;
+    while(lkey < rkey)
+    {
+        int mid = lkey + (rkey - lkey) / 2;
+        if(k > keys[mid])
+            lkey = mid + 1;
+        else
+            rkey = mid;
+    }
+    return keys[lkey] == k ? lkey + 1 : lkey;
 }
 
 // insert the node that is assumed not full
