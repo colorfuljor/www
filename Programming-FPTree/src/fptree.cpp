@@ -198,7 +198,7 @@ void LeafNode::printNode() {
 
 // new a empty leaf and set the valuable of the LeafNode
 LeafNode::LeafNode(FPTree* t) {
-    // TODO
+    // DONE
     tree = t;
     isLeaf = true;
     degree = LEAF_DEGREE;
@@ -222,7 +222,7 @@ LeafNode::LeafNode(FPTree* t) {
 // reload the leaf with the specific Persistent Pointer
 // need to call the PAllocator
 LeafNode::LeafNode(PPointer p, FPTree* t) {
-    // TODO
+    // DONE
     tree = t;
     isLeaf = true;
     degree = LEAF_DEGREE;
@@ -258,7 +258,7 @@ KeyNode* LeafNode::insert(const Key& k, const Value& v) {
 
 // insert into the leaf node that is assumed not full
 void LeafNode::insertNonFull(const Key& k, const Value& v) {
-    // TODO
+    // DONE
     /*From Oukid_FPTree.pdf Algorithm2:
         slot = Leaf.Bitmap.FindFirstZero();
         Leaf.KV[slot] = (K, V); Leaf.Fingerprints[slot] = hash(K);
@@ -335,7 +335,7 @@ Value LeafNode::find(const Key& k) {
 
 // find the first empty slot
 int LeafNode::findFirstZero() {
-    // TODO
+    // DONE
     for(int i = 0; i < LEAF_DEGREE*2; i++)
     {   
         if( getBit(i) == 0)
