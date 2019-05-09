@@ -198,13 +198,51 @@ void LeafNode::printNode() {
 
 // new a empty leaf and set the valuable of the LeafNode
 LeafNode::LeafNode(FPTree* t) {
-    // TODO:
+    // DONE
+    tree = t;
+    isLeaf = true;
+    degree = LEAF_DEGREE;
+
+    int n = LEAF_DEGREE * 2;
+    int bitArrNum = (n + 7) / 8;    
+    pAllocator->getLeaf(pPointer,pmem_addr);
+    
+    // the pointer below are all pmem address based on pmem_addr
+    bitmap = (Byte*)pmem_addr;
+    pNext = (PPointer*)pmem_addr + bitArrNum;
+    fingerprints = (Byte*)pNext + sizeof(PPointer);
+    kv = (KeyValue*)fingerprints + n * sizeof(Byte);
+
+    n = 0;
+    prev = next = NULL;
+    filePath = DATA_DIR + to_string(pPointer.fileId);
+    bitmapSize = 0;
 }
 
 // reload the leaf with the specific Persistent Pointer
 // need to call the PAllocator
 LeafNode::LeafNode(PPointer p, FPTree* t) {
-    // TODO:
+    // DONE
+    tree = t;
+    isLeaf = true;
+    degree = LEAF_DEGREE;
+
+    int n = LEAF_DEGREE * 2;
+    int bitArrNum = (n + 7) / 8;    
+   
+    pPointer = p;
+    pmem_addr = pAllocator->getLeafPmemAddr(p);
+    
+    // the pointer below are all pmem address based on pmem_addr
+    bitmap = (Byte*)pmem_addr;
+    pNext = (PPointer*)pmem_addr + bitArrNum;
+    fingerprints = (Byte*)pNext + sizeof(PPointer);
+    kv = (KeyValue*)fingerprints + n * sizeof(Byte);
+
+    n = 0;
+    prev = next = NULL;
+    filePath = DATA_DIR + to_string(pPointer.fileId);
+    bitmapSize = bitArrNum;
 }
 
 LeafNode::~LeafNode() {
@@ -220,7 +258,20 @@ KeyNode* LeafNode::insert(const Key& k, const Value& v) {
 
 // insert into the leaf node that is assumed not full
 void LeafNode::insertNonFull(const Key& k, const Value& v) {
-    // TODO:
+    // DONE
+    /*From Oukid_FPTree.pdf Algorithm2:
+        slot = Leaf.Bitmap.FindFirstZero();
+        Leaf.KV[slot] = (K, V); Leaf.Fingerprints[slot] = hash(K);
+        //Persist(Leaf.KV[slot]); Persist(Leaf.Fingerprints[slot]);
+        Leaf.Bitmap[slot] = 1; 
+        //Persist(Leaf.Bitmap);
+    */
+    int slot = findFirstZero();
+    kv[slot].k = k;
+    kv[slot].v = v;
+    fingerprints[slot] = keyHash(k);
+    bitmap[slot / 8] |= 0x01>>(7-(slot % 8));
+    n++;
 }
 
 // split the leaf node
@@ -242,8 +293,9 @@ Key LeafNode::findSplitKey() {
 // get the targte bit in bitmap
 // TIPS: bit operation
 int LeafNode::getBit(const int& idx) {
-    // TODO:
-    return 0;
+    // DONE
+    int nshift = 7-(idx%8);
+    return ((bitmap[idx/8] >> nshift) & 0x01);
 }
 
 Key LeafNode::getKey(const int& idx) {
@@ -283,7 +335,12 @@ Value LeafNode::find(const Key& k) {
 
 // find the first empty slot
 int LeafNode::findFirstZero() {
-    // TODO:
+    // DONE
+    for(int i = 0; i < LEAF_DEGREE*2; i++)
+    {   
+        if( getBit(i) == 0)
+            return i;
+    }
     return -1;
 }
 
