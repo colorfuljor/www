@@ -4,7 +4,11 @@ using namespace std;
 
 // Initial the new InnerNode
 InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
-    // TODO:
+    // done
+    this->degree = d;
+    this->isLeaf = false;
+    this->tree = t;
+
     this->isRoot = _isRoot;
     this->keys = new Key(2 * d + 1);
     this->childrens = new Node*(2 * d + 2);
@@ -14,19 +18,20 @@ InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
 
 // delete the InnerNode
 InnerNode::~InnerNode() {
-    // TODO:
-    delete this->nChild;
-    delete this->nKeys;
+    // done
+    delete this->childrens;
+    delete this->keys;
 }
 
 // binary search the first key in the innernode larger than input key
 int InnerNode::findIndex(const Key& k) {
-    // TODO:
-    int low = 1, high = nKeys, mid;
-    while(low < high){
+    // done
+    //k0:c0&c1, k1:c2, k2:c3, ... kn:cn+1
+    int low = 0, high = nKeys - 1, mid;
+    while(low <= high){
         mid = (low + high) / 2;
         if (keys[mid] == k) {
-            return mid;
+            return mid + 1;
         } else if (keys[mid] > k) {
             high = mid - 1;
         } else {
@@ -43,7 +48,17 @@ int InnerNode::findIndex(const Key& k) {
 // ======================
 // WARNING: can not insert when it has no entry
 void InnerNode::insertNonFull(const Key& k, Node* const& node) {
-    // TODO:
+    // done
+    int index = findIndex(k);
+    int i;
+    for (i = nKeys; i > index; i--)
+        keys[i] = keys[i - 1];
+    key[index] = k;
+    nKeys++;
+    for (i = nChild; i > index + 1; i--)
+        childrens[i] = childrens[i - 1];
+    childrens[index + 1] = node;
+    nChild++;
 }
 
 // insert func
@@ -53,14 +68,40 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
 
     // 1.insertion to the first leaf(only one leaf)
     if (this->isRoot && this->nKeys == 0) {
-        // TODO:
-        LeafNode 
-        childrens[1] = ;
+        // done
+        if (nChild == 0) {
+            LeafNode newLeaf = new LeafNode(tree);
+            childrens[nChild++] = leaf;
+        }
+        newChild = childrens[1]->insert(k, v);
+        if (newChild != NULL) {
+            insertLeaf(newChild);
+        }
         return newChild;
     }
     
     // 2.recursive insertion
-    // TODO:
+    // done
+    int index = findIndex(k);
+    newChild = childrens[index]->insert(k, v);
+    if (newChild != NULL) {
+        if (nKeys < 2 * degree) {
+            insertNonFull(k, newChild);
+            newChild = NULL;
+        }   
+        else {
+            insertNonFull(k, newChild);
+            newChild = split();
+            if (this->isRoot) {
+                this->isRoot == false;
+                InnerNode *newRoot = new InnerNode(this->degree, this->tree, true);
+                newRoot->childrens[++newRoot->nChild] = this;
+                newRoot->insertNonFull(newChild->key, newChild->node);
+                this->tree->changeRoot(newRoot);
+            }
+        } 
+    }
+
     return newChild;
 }
 
@@ -72,6 +113,8 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
     // first and second leaf insertion into the tree
     if (this->isRoot && this->nKeys == 0) {
         // TODO:
+        
+
         return newChild;
     }
     
@@ -89,7 +132,16 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
 KeyNode* InnerNode::split() {
     KeyNode* newChild = new KeyNode();
     // right half entries of old node to the new node, others to the old node. 
-    // TODO:
+    // done
+    InnerNode* newNode = new InnerNode(this->degree, this->tree, false);
+    int i;
+    for (i = this->degree + 1; i < 2 * this->degree + 1; i++) {
+        newNode->insertNonFull(this->keys[i], this->childrens[i + 1]);
+    }
+    newChild->key = keys[this->degree];
+    newChild->node = newNode;
+    this->nKeys = this->degree;
+    this->nChild = this->degree + 1;
 
     return newChild;
 }
@@ -247,6 +299,7 @@ LeafNode::LeafNode(PPointer p, FPTree* t) {
 
 LeafNode::~LeafNode() {
     // TODO:
+    persist();
 }
 
 // insert an entry into the leaf, need to split it if it is full
@@ -338,7 +391,7 @@ int LeafNode::findFirstZero() {
     // DONE
     for(int i = 0; i < LEAF_DEGREE*2; i++)
     {   
-        if( getBit(i) == 0)
+        if ( getBit(i) == 0)
             return i;
     }
     return -1;
