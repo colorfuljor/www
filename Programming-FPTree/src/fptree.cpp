@@ -75,7 +75,7 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
         }
         newChild = childrens[1]->insert(k, v);
         if (newChild != NULL) {
-            insertLeaf(newChild);
+            insertLeaf(*newChild);
         }
         return newChild;
     }
@@ -95,7 +95,7 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
             if (this->isRoot) {
                 this->isRoot == false;
                 InnerNode *newRoot = new InnerNode(this->degree, this->tree, true);
-                newRoot->childrens[++newRoot->nChild] = this;
+                newRoot->childrens[newRoot->nChild++] = this;
                 newRoot->insertNonFull(newChild->key, newChild->node);
                 this->tree->changeRoot(newRoot);
             }
@@ -112,8 +112,12 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
     KeyNode* newChild = NULL;
     // first and second leaf insertion into the tree
     if (this->isRoot && this->nKeys == 0) {
-        // TODO:
-        
+        // done
+        if (nChild == 0) {
+            childrens[nChild++] = leaf.node;
+        } else {
+            insertNonFull(leaf.key, leaf.node);
+        }
 
         return newChild;
     }
@@ -121,10 +125,43 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
     // recursive insert
     // Tip: please judge whether this InnerNode is full
     // next level is not leaf, just insertLeaf
-    // TODO:
-
-    // next level is leaf, insert to childrens array
-    // TODO:
+    // done
+    int index = findIndex(leaf.key);
+    if (!childrens[index]->isLeaf) {
+        newChild = childrens[index]->insertLeaf(leaf);
+        if (newChild != NULL) {
+            if (nKeys < 2 * degree) {
+                insertNonFull(k, newChild);
+                newChild = NULL;
+            }   
+            else {
+                insertNonFull(k, newChild);
+                newChild = split();
+                if (this->isRoot) {
+                    this->isRoot == false;
+                    InnerNode *newRoot = new InnerNode(this->degree, this->tree, true);
+                    newRoot->childrens[newRoot->nChild++] = this;
+                    newRoot->insertNonFull(newChild->key, newChild->node);
+                    this->tree->changeRoot(newRoot);
+                }
+            } 
+        }
+    } else {  // next level is leaf, insert to childrens array
+        if (nChild < 2 * degree + 1) {
+            insertNonFull(leaf.key, leaf.node);
+            newChild = NULL;
+        } else {
+            insertNonFull(leaf.key, leaf.node);
+            newChild = split();
+            if (this->isRoot) {
+                    this->isRoot == false;
+                    InnerNode *newRoot = new InnerNode(this->degree, this->tree, true);
+                    newRoot->childrens[newRoot->nChild++] = this;
+                    newRoot->insertNonFull(newChild->key, newChild->node);
+                    this->tree->changeRoot(newRoot);
+                }
+        }
+    }
 
     return newChild;
 }
@@ -210,12 +247,16 @@ bool InnerNode::update(const Key& k, const Value& v) {
 // find the target value with the search key, return MAX_VALUE if it fails.
 Value InnerNode::find(const Key& k) {
     // TODO:
+
     return MAX_VALUE;
 }
 
 // get the children node of this InnerNode
 Node* InnerNode::getChild(const int& idx) {
     // TODO:
+    if (idx < this->nChild) {
+        return this->childrens[idx];
+    }
     return NULL;
 }
 
