@@ -89,11 +89,11 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
     newChild = childrens[index]->insert(k, v);
     if (newChild != NULL) {
         if (nKeys < 2 * degree) {
-            insertNonFull(k, newChild);
+            insertNonFull(newChild->key, newChild->node);
             newChild = NULL;
         }   
         else {
-            insertNonFull(k, newChild);
+            insertNonFull(newChild->key, newChild->node);
             newChild = split();
             if (this->isRoot) {
                 this->isRoot == false;
@@ -130,15 +130,15 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
     // next level is not leaf, just insertLeaf
     // done
     int index = findIndex(leaf.key);
-    if (!childrens[index]->isLeaf) {
+    if (!childrens[index]->ifLeaf()) {
         newChild = childrens[index]->InnerNode::insertLeaf(leaf);
         if (newChild != NULL) {
             if (nKeys < 2 * degree) {
-                insertNonFull(index, newChild);
+                insertNonFull(newChild->key, newChild->node);
                 newChild = NULL;
             }   
             else {
-                insertNonFull(index, newChild);
+                insertNonFull(newChild->key, newChild->node);
                 newChild = split();
                 if (this->isRoot) {
                     this->isRoot == false;
