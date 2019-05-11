@@ -352,8 +352,10 @@ LeafNode::~LeafNode() {
 KeyNode* LeafNode::insert(const Key& k, const Value& v) {
     KeyNode* newChild = NULL;
     // TODO     
-    if(n == 2*degree - 1)
+    if(n == 2*degree - 1) {
+        insertNonFull(k,v);
         newChild = split();
+    }   
     else 
         insertNonFull(k,v);
     return newChild;
@@ -400,8 +402,7 @@ KeyNode* LeafNode::split() {
     this->next = new_leaf_node;
     new_leaf_node->prev = this;
     *pNext = this->next->pPointer;
-    persist();
-
+    // persist();
     for(int i = 0; i < LEAF_DEGREE * 2;i++)
         if(getBit(i) && kv[i].k >= split_key)
         {
@@ -410,7 +411,6 @@ KeyNode* LeafNode::split() {
             clearBit(bitmap, i);
             this->n--;
         }
-
     newChild->key = split_key;
     newChild->node = new_leaf_node;
     return newChild;
@@ -427,9 +427,9 @@ Key LeafNode::findSplitKey() {
     for(int i = 0; i < LEAF_DEGREE*2; i++)
         if(getBit(i))
             sort_kv[cnt++] = kv[i];
-
     sort(sort_kv, sort_kv + cnt,[](KeyValue x, KeyValue y){return x.k < y.k;});
-    midKey = sort_kv[n/2].k;
+
+    midKey = sort_kv[n/2 - 1].k;
     return midKey;
 }
 
