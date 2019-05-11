@@ -11,7 +11,10 @@ InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
 
     this->isRoot = _isRoot;
     this->keys = new Key(2 * d + 1);
-    this->childrens = new Node*(2 * d + 2);
+    this->childrens = new Node*[2*d+2];
+    for(int i = 0; i < 2*d+2; i++){
+        childrens[i] = NULL;
+    }
     this->nKeys = 0;
     this->nChild = 0;
 }
@@ -70,8 +73,8 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
     if (this->isRoot && this->nKeys == 0) {
         // done
         if (nChild == 0) {
-            LeafNode newLeaf = new LeafNode(tree);
-            childrens[nChild++] = leaf;
+            LeafNode *newLeaf = new LeafNode(tree);
+            childrens[nChild++] = newLeaf;
         }
         newChild = childrens[1]->insert(k, v);
         if (newChild != NULL) {
@@ -128,14 +131,14 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
     // done
     int index = findIndex(leaf.key);
     if (!childrens[index]->isLeaf) {
-        newChild = childrens[index]->insertLeaf(leaf);
+        newChild = childrens[index]->InnerNode::insertLeaf(leaf);
         if (newChild != NULL) {
             if (nKeys < 2 * degree) {
-                insertNonFull(k, newChild);
+                insertNonFull(index, newChild);
                 newChild = NULL;
             }   
             else {
-                insertNonFull(k, newChild);
+                insertNonFull(index, newChild);
                 newChild = split();
                 if (this->isRoot) {
                     this->isRoot == false;
@@ -517,5 +520,6 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO:
+
     return false;
 }
