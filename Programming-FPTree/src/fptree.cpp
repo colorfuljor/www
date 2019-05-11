@@ -601,7 +601,10 @@ bool FPTree::bulkLoading() {
         key_temp.key = leaf_temp->getKey(0);
         key_temp.node = leaf_temp;
         root->insertLeaf(key_temp);
+
         start = *(leaf_temp->pNext);
+
     }
+
     return true;
 }
