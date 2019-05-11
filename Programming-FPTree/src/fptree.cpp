@@ -360,11 +360,11 @@ KeyNode* LeafNode::insert(const Key& k, const Value& v) {
 }
 
 inline void setBit(Byte *bitmap,int slot){
-    bitmap[slot / 8] |= 0x01>>(7-(slot % 8));
+    bitmap[slot / 8] |= 0x01<<(7-(slot % 8));
 }
 
 inline void clearBit(Byte *bitmap, int slot){
-    bitmap[slot / 8] &= ~(0x01>>(7-(slot % 8)));
+    bitmap[slot / 8] &= ~(0x01<<(7-(slot % 8)));
 }
 
 // insert into the leaf node that is assumed not full
