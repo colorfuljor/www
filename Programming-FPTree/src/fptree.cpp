@@ -1,7 +1,8 @@
 #include"fptree/fptree.h"
+#include <algorithm>
 
 using namespace std;
-
+PAllocator* pAllocator = PAllocator::getAllocator();
 // Initial the new InnerNode
 InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
     // done
@@ -131,7 +132,7 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
     // done
     int index = findIndex(leaf.key);
     if (!childrens[index]->ifLeaf()) {
-        newChild = childrens[index]->InnerNode::insertLeaf(leaf);
+        newChild = dynamic_cast<InnerNode *>(childrens[index])->InnerNode::insertLeaf(leaf);
         if (newChild != NULL) {
             if (nKeys < 2 * degree) {
                 insertNonFull(newChild->key, newChild->node);
@@ -570,8 +571,7 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO:
-    PAllocator *pAllocator = PAllocator::getAllocator();
-    pStart = 
+
     
     return false;
 }
