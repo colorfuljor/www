@@ -473,6 +473,7 @@ Value LeafNode::find(const Key& k) {
     // TODO:
     int slot;
     for (slot = 0; slot < 2 * degree; slot++) {
+        Key currentKey = kv[slot].k;
         if(getBit(slot) == 1 && fingerprints[slot] == keyHash(k) && currentKey == k)
             return kv[slot].v;
     }
