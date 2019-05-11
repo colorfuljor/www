@@ -454,7 +454,7 @@ void FPTree::recursiveDelete(Node* n) {
         delete n;
     } else {
         for (int i = 0; i < ((InnerNode*)n)->nChild; i++) {
-            recursiveDelete(((InnerNode*)n)->childrens[i]);
+            recursiveDelegitte(((InnerNode*)n)->childrens[i]);
         }
         delete n;
     }
@@ -522,7 +522,6 @@ void FPTree::printTree() {
 bool FPTree::bulkLoading() {
     // TODO:
     PAllocator *pAllocator = PAllocator::getAllocator();
-    pStart = 
-    
-    return false;
+    PPointer pStart = pAllocator->getStartPointer();
+
 }
