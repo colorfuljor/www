@@ -10,7 +10,7 @@ InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
     this->tree = t;
 
     this->isRoot = _isRoot;
-    this->keys = new Key(2 * d + 1);
+    this->keys = new Key[2 * d + 1];
     this->childrens = new Node*[2*d+2];
     for(int i = 0; i < 2*d+2; i++){
         childrens[i] = NULL;
@@ -31,12 +31,12 @@ int InnerNode::findIndex(const Key& k) {
     // done
     //k0:c0&c1, k1:c2, k2:c3, ... kn:cn+1
     int low = 0, high = nKeys - 1, mid;
-    while(low < high){
+    while(low <= high){
         mid = (low + high) / 2;
         if (k == keys[mid]) 
             return mid + 1;
         else if (k < keys[mid]) 
-            high = mid;
+            high = mid - 1;
         else 
             low = mid + 1;
         
@@ -300,8 +300,9 @@ LeafNode::LeafNode(FPTree* t) {
     degree = LEAF_DEGREE;
 
     int n = LEAF_DEGREE * 2;
-    int bitArrNum = (n + 7) / 8;    
-    pAllocator->getLeaf(pPointer,pmem_addr);
+    int bitArrNum = (n + 7) / 8; 
+
+    PAllocator::getAllocator()->getLeaf(pPointer,pmem_addr);
     
     // the pointer below are all pmem address based on pmem_addr
     bitmap = (Byte*)pmem_addr;
@@ -327,7 +328,7 @@ LeafNode::LeafNode(PPointer p, FPTree* t) {
     int bitArrNum = (n + 7) / 8;    
    
     pPointer = p;
-    pmem_addr = pAllocator->getLeafPmemAddr(p);
+    pmem_addr = PAllocator::getAllocator()->getLeafPmemAddr(p);
     
     // the pointer below are all pmem address based on pmem_addr
     bitmap = (Byte*)pmem_addr;
@@ -520,6 +521,8 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO:
-
+    PAllocator *pAllocator = PAllocator::getAllocator();
+    pStart = 
+    
     return false;
 }

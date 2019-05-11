@@ -40,7 +40,6 @@ PAllocator::PAllocator() {
  
         for(uint64_t i = 0; i< freeNum; i++)
         {
-            
             PPointer buf;
             freeListFile.read((char *)(&buf), sizeof(buf));
             freeList.push_back(buf);
