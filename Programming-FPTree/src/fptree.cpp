@@ -571,6 +571,7 @@ void FPTree::printTree() {
 bool FPTree::bulkLoading() {
     // TODO:
     PAllocator *pAllocator = PAllocator::getAllocator();
-    
+    //1. read data file : not exist -> return false
+    //2.
     return false;
 }
