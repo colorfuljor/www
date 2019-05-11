@@ -339,7 +339,7 @@ LeafNode::LeafNode(PPointer p, FPTree* t) {
     filePath = DATA_DIR + to_string(pPointer.fileId);
 
     
-    for(int i = 0; i < bitmapSize; i++)
+    for(uint64_t i = 0; i < bitmapSize; i++)
         if(getBit(i)) n++;
 }
 
@@ -421,7 +421,7 @@ Key LeafNode::findSplitKey() {
     Key midKey = 0;
     // DONE
     int cnt = 0;
-    KeyValue *sort_kv;
+    KeyValue *sort_kv = new KeyValue[LEAF_DEGREE * 2];
     for(int i = 0; i < LEAF_DEGREE*2; i++)
         if(getBit(i))
             sort_kv[cnt++] = kv[i];
