@@ -250,8 +250,8 @@ bool InnerNode::update(const Key& k, const Value& v) {
 // find the target value with the search key, return MAX_VALUE if it fails.
 Value InnerNode::find(const Key& k) {
     // TODO:
-
-    return MAX_VALUE;
+    int index = findIndex(k);
+    return childrens[index]->find(k);
 }
 
 // get the children node of this InnerNode
@@ -471,6 +471,12 @@ bool LeafNode::update(const Key& k, const Value& v) {
 // if the entry can not be found, return the max Value
 Value LeafNode::find(const Key& k) {
     // TODO:
+    int i;
+    for (i = 0; i < 2 * degree; i++) {
+        if (getBit(i) && getValue(i) == getKey(i) && getKey(i) == k) {
+            return getValue(i);
+        }
+    }
     return MAX_VALUE;
 }
 
