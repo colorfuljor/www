@@ -574,8 +574,9 @@ bool FPTree::bulkLoading() {
     //1. read data file : not exist -> return false
     //2. exitst -> call  PAllocator -> leave sort
     //3. insert return true
-    if(pAllocator->getMaxFileId() == 1)
+    PPointer start = pAllocator->getStartPointer();
+    if(!pAllocator->ifLeafUsed(start))
         return false;
-    
+        
     
 }
