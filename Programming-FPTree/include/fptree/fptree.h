@@ -167,7 +167,7 @@ public:
 
 class FPTree {
 private:
-    InnerNode* root;
+    InneriNode* root;
     uint64_t   degree;
 
     void recursiveDelete(Node* n);

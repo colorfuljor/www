@@ -219,6 +219,13 @@ bool PAllocator::newLeafGroup() {
             p.offset = LEAF_GROUP_HEAD + i * calLeafSize();
             freeList.push_back(p);
         } 
+    int len = 8+LEAF_GROUP_AMOUNT*(1+calLeafSize());
+    if ((fId2PmAddr[maxFileId] = (char*)pmem_map_file(fileIdPath.c_str(), 
+        len, PMEM_FILE_CREATE,0666,NULL, NULL)) == NULL) 
+    {
+        perror("pmem_map_file");
+        exit(1);
+    }
         freeNum += LEAF_GROUP_AMOUNT;   
         maxFileId++;    
         leafGroup.close();

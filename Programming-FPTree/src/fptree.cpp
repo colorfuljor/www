@@ -76,7 +76,7 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
             LeafNode *newLeaf = new LeafNode(tree);
             childrens[nChild++] = newLeaf;
         }
-        newChild = childrens[1]->insert(k, v);
+        newChild = childrens[1]->insert(k, v); 
         if (newChild != NULL) {
             insertLeaf(*newChild);
         }
@@ -297,7 +297,7 @@ LeafNode::LeafNode(FPTree* t) {
     // DONE
     tree = t;
     isLeaf = true;
-    degree = LEAF_DEGREE;
+    degree = t;
 
     int nn = LEAF_DEGREE * 2;
     bitmapSize = (nn + 7) / 8;    
