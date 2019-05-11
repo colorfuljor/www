@@ -76,7 +76,7 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
             LeafNode *newLeaf = new LeafNode(tree);
             childrens[nChild++] = newLeaf;
         }
-        newChild = childrens[1]->insert(k, v);
+        newChild = childrens[0]->insert(k, v);
         if (newChild != NULL) {
             insertLeaf(*newChild);
         }
@@ -89,11 +89,11 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
     newChild = childrens[index]->insert(k, v);
     if (newChild != NULL) {
         if (nKeys < 2 * degree) {
-            insertNonFull(k, newChild);
+            insertNonFull(newChild->key, newChild->node);
             newChild = NULL;
         }   
         else {
-            insertNonFull(k, newChild);
+            insertNonFull(newChild->key, newChild->node);
             newChild = split();
             if (this->isRoot) {
                 this->isRoot == false;
@@ -130,15 +130,15 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
     // next level is not leaf, just insertLeaf
     // done
     int index = findIndex(leaf.key);
-    if (!childrens[index]->isLeaf) {
-        newChild = childrens[index]->insertLeaf(leaf);
+    if (!childrens[index]->ifLeaf()) {
+        newChild = childrens[index]->InnerNode::insertLeaf(leaf);
         if (newChild != NULL) {
             if (nKeys < 2 * degree) {
-                insertNonFull(leaf.k, newChild);
+                insertNonFull(newChild->key, newChild->node);
                 newChild = NULL;
             }   
             else {
-                insertNonFull(k, newChild);
+                insertNonFull(newChild->key, newChild->node);
                 newChild = split();
                 if (this->isRoot) {
                     this->isRoot == false;
@@ -250,8 +250,8 @@ bool InnerNode::update(const Key& k, const Value& v) {
 // find the target value with the search key, return MAX_VALUE if it fails.
 Value InnerNode::find(const Key& k) {
     // TODO:
-
-    return MAX_VALUE;
+    int index = findIndex(k);
+    return childrens[index]->find(k);
 }
 
 // get the children node of this InnerNode
@@ -299,21 +299,19 @@ LeafNode::LeafNode(FPTree* t) {
     isLeaf = true;
     degree = LEAF_DEGREE;
 
-    int n = LEAF_DEGREE * 2;
-    int bitArrNum = (n + 7) / 8; 
-
-    PAllocator::getAllocator()->getLeaf(pPointer,pmem_addr);
+    int nn = LEAF_DEGREE * 2;
+    bitmapSize = (nn + 7) / 8;    
+    pAllocator->getLeaf(pPointer,pmem_addr);
     
     // the pointer below are all pmem address based on pmem_addr
     bitmap = (Byte*)pmem_addr;
-    pNext = (PPointer*)pmem_addr + bitArrNum;
+    pNext = (PPointer*)pmem_addr + bitmapSize;
     fingerprints = (Byte*)pNext + sizeof(PPointer);
-    kv = (KeyValue*)fingerprints + n * sizeof(Byte);
+    kv = (KeyValue*)fingerprints + nn * sizeof(Byte);
 
     n = 0;
     prev = next = NULL;
     filePath = DATA_DIR + to_string(pPointer.fileId);
-    bitmapSize = 0;
 }
 
 // reload the leaf with the specific Persistent Pointer
@@ -324,22 +322,25 @@ LeafNode::LeafNode(PPointer p, FPTree* t) {
     isLeaf = true;
     degree = LEAF_DEGREE;
 
-    int n = LEAF_DEGREE * 2;
-    int bitArrNum = (n + 7) / 8;    
+    int nn = LEAF_DEGREE * 2;
+    bitmapSize = (nn + 7) / 8;     
    
     pPointer = p;
-    pmem_addr = PAllocator::getAllocator()->getLeafPmemAddr(p);
+    pmem_addr = pAllocator->getLeafPmemAddr(p);
     
     // the pointer below are all pmem address based on pmem_addr
     bitmap = (Byte*)pmem_addr;
-    pNext = (PPointer*)pmem_addr + bitArrNum;
+    pNext = (PPointer*)pmem_addr + bitmapSize;
     fingerprints = (Byte*)pNext + sizeof(PPointer);
-    kv = (KeyValue*)fingerprints + n * sizeof(Byte);
-
+    kv = (KeyValue*)fingerprints + nn * sizeof(Byte);
+    
     n = 0;
     prev = next = NULL;
     filePath = DATA_DIR + to_string(pPointer.fileId);
-    bitmapSize = bitArrNum;
+
+    
+    for(int i = 0; i < bitmapSize; i++)
+        if(getBit(i)) n++;
 }
 
 LeafNode::~LeafNode() {
@@ -350,8 +351,20 @@ LeafNode::~LeafNode() {
 // insert an entry into the leaf, need to split it if it is full
 KeyNode* LeafNode::insert(const Key& k, const Value& v) {
     KeyNode* newChild = NULL;
-    // TODO:
+    // TODO     
+    if(n == 2*degree - 1)
+        newChild = split();
+    else 
+        insertNonFull(k,v);
     return newChild;
+}
+
+inline void setBit(Byte *bitmap,int slot){
+    bitmap[slot / 8] |= 0x01>>(7-(slot % 8));
+}
+
+inline void clearBit(Byte *bitmap, int slot){
+    bitmap[slot / 8] &= ~(0x01>>(7-(slot % 8)));
 }
 
 // insert into the leaf node that is assumed not full
@@ -368,14 +381,36 @@ void LeafNode::insertNonFull(const Key& k, const Value& v) {
     kv[slot].k = k;
     kv[slot].v = v;
     fingerprints[slot] = keyHash(k);
-    bitmap[slot / 8] |= 0x01>>(7-(slot % 8));
+    setBit(bitmap,slot);
+    // bitmap[slot / 8] |= 0x01>>(7-(slot % 8));
     n++;
+    persist();
 }
 
 // split the leaf node
 KeyNode* LeafNode::split() {
     KeyNode* newChild = new KeyNode();
-    // TODO:
+    // DONE
+    Key split_key = findSplitKey();
+    
+    LeafNode *new_leaf_node = new LeafNode(tree);
+    if(this->prev != NULL)
+        this->prev->next = new_leaf_node;
+    new_leaf_node->prev = this->prev;
+    this->prev = new_leaf_node;
+    new_leaf_node->next = this;
+
+    for(int i = 0; i < LEAF_DEGREE * 2;i++)
+        if(getBit(i) && kv[i].k >= split_key)
+        {
+            new_leaf_node->insertNonFull(kv[i].k, kv[i].v);
+            //remove entry
+            clearBit(bitmap, i);
+            this->n--;
+        }
+
+    newChild->key = split_key;
+    newChild->node = new_leaf_node;
     return newChild;
 }
 
@@ -384,7 +419,15 @@ KeyNode* LeafNode::split() {
 // qsort first then find
 Key LeafNode::findSplitKey() {
     Key midKey = 0;
-    // TODO:
+    // DONE
+    int cnt = 0;
+    KeyValue *sort_kv;
+    for(int i = 0; i < LEAF_DEGREE*2; i++)
+        if(getBit(i))
+            sort_kv[cnt++] = kv[i];
+
+    sort(sort_kv, sort_kv + cnt,[](KeyValue x, KeyValue y){return x.k < y.k;});
+    midKey = sort_kv[n/2].k;
     return midKey;
 }
 
@@ -428,6 +471,12 @@ bool LeafNode::update(const Key& k, const Value& v) {
 // if the entry can not be found, return the max Value
 Value LeafNode::find(const Key& k) {
     // TODO:
+    int i;
+    for (i = 0; i < 2 * degree; i++) {
+        if (getBit(i) && getValue(i) == getKey(i) && getKey(i) == k) {
+            return getValue(i);
+        }
+    }
     return MAX_VALUE;
 }
 
@@ -454,7 +503,7 @@ void FPTree::recursiveDelete(Node* n) {
         delete n;
     } else {
         for (int i = 0; i < ((InnerNode*)n)->nChild; i++) {
-            recursiveDelegitte(((InnerNode*)n)->childrens[i]);
+            recursiveDelete(((InnerNode*)n)->childrens[i]);
         }
         delete n;
     }
@@ -522,6 +571,6 @@ void FPTree::printTree() {
 bool FPTree::bulkLoading() {
     // TODO:
     PAllocator *pAllocator = PAllocator::getAllocator();
-    PPointer pStart = pAllocator->getStartPointer();
-
+    
+    return false;
 }
