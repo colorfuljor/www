@@ -175,6 +175,11 @@ KeyNode* InnerNode::split() {
     // done
     InnerNode* newNode = new InnerNode(this->degree, this->tree, false);
     int i;
+    newNode->childrens[0] = this->childrens[this->degree];
+    newNode->childrens[1] = this->childrens[this->degree + 1];
+    newNode->keys[0] = this->keys[this->degree];
+    newNode->nChild = 2;
+    newNode->nKeys = 1;
     for (i = this->degree + 1; i < 2 * this->degree + 1; i++) {
         newNode->insertNonFull(this->keys[i], this->childrens[i + 1]);
     }
@@ -251,6 +256,7 @@ bool InnerNode::update(const Key& k, const Value& v) {
 Value InnerNode::find(const Key& k) {
     // done
     int index = findIndex(k);
+        
     return childrens[index]->find(k);
 }
 
@@ -566,6 +572,8 @@ Value FPTree::find(Key k) {
 // TIPS: use Queue
 void FPTree::printTree() {
     // TODO:
+    root->printNode();
+
 }
 
 // bulkLoading the leaf files and reload the tree
