@@ -399,6 +399,7 @@ KeyNode* LeafNode::split() {
     new_leaf_node->prev = this->prev;
     this->prev = new_leaf_node;
     new_leaf_node->next = this;
+    pNext = &(this->prev->pPointer);
 
     for(int i = 0; i < LEAF_DEGREE * 2;i++)
         if(getBit(i) && kv[i].k >= split_key)
@@ -495,6 +496,8 @@ int LeafNode::findFirstZero() {
 // use PMDK
 void LeafNode::persist() {
     // TODO:
+    size_t len =LEAF_GROUP_HEAD+LEAF_GROUP_AMOUNT*calLeafSize();
+    pmem_persist(pmem_addr, len);
 }
 
 // call by the ~FPTree(), delete the whole tree
