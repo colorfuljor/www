@@ -1,7 +1,8 @@
 #include"fptree/fptree.h"
+#include <algorithm>
 
 using namespace std;
-
+PAllocator* pAllocator = PAllocator::getAllocator();
 // Initial the new InnerNode
 InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
     // done
@@ -76,7 +77,7 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
             LeafNode *newLeaf = new LeafNode(tree);
             childrens[nChild++] = newLeaf;
         }
-        newChild = childrens[1]->insert(k, v); 
+        newChild = childrens[0]->insert(k, v);
         if (newChild != NULL) {
             insertLeaf(*newChild);
         }
@@ -131,7 +132,7 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
     // done
     int index = findIndex(leaf.key);
     if (!childrens[index]->ifLeaf()) {
-        newChild = childrens[index]->InnerNode::insertLeaf(leaf);
+        newChild = dynamic_cast<InnerNode *>(childrens[index])->InnerNode::insertLeaf(leaf);
         if (newChild != NULL) {
             if (nKeys < 2 * degree) {
                 insertNonFull(newChild->key, newChild->node);
@@ -250,8 +251,8 @@ bool InnerNode::update(const Key& k, const Value& v) {
 // find the target value with the search key, return MAX_VALUE if it fails.
 Value InnerNode::find(const Key& k) {
     // TODO:
-
-    return MAX_VALUE;
+    int index = findIndex(k);
+    return childrens[index]->find(k);
 }
 
 // get the children node of this InnerNode
@@ -471,6 +472,12 @@ bool LeafNode::update(const Key& k, const Value& v) {
 // if the entry can not be found, return the max Value
 Value LeafNode::find(const Key& k) {
     // TODO:
+    int i;
+    for (i = 0; i < 2 * degree; i++) {
+        if (getBit(i) && getValue(i) == getKey(i) && getKey(i) == k) {
+            return getValue(i);
+        }
+    }
     return MAX_VALUE;
 }
 
@@ -564,8 +571,6 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO:
-    PAllocator *pAllocator = PAllocator::getAllocator();
-    pStart = 
     
     return false;
 }
