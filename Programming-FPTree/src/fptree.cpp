@@ -573,6 +573,24 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO:
-    
-    return false;
+    PAllocator *pAllocator = PAllocator::getAllocator();
+    //1. read data file : not exist -> return false
+    //2. exitst -> call  PAllocator -> leave sort
+    //3. insert return true
+
+
+    PPointer start = pAllocator->getStartPointer();
+    if(!pAllocator->ifLeafUsed(start))
+        return false;
+
+    uint64_t leaf_amount = LEAF_GROUP_AMOUNT*(pAllocator->getMaxFileId() - 1) - pAllocator->getFreeNum();
+    for(uint64_t i = 0; i < leaf_amount; i++){
+        LeafNode *leaf_temp = new LeafNode(start, this);
+        KeyNode key_temp;
+        key_temp.key = leaf_temp->getKey(0);
+        key_temp.node = leaf_temp;
+        root->insertLeaf(key_temp);
+        start = *(leaf_temp->pNext);
+    }
+    return true;
 }
