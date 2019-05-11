@@ -2,7 +2,6 @@
 #include <algorithm>
 
 using namespace std;
-PAllocator* pAllocator = PAllocator::getAllocator();
 // Initial the new InnerNode
 InnerNode::InnerNode(const int& d, FPTree* const& t, bool _isRoot) {
     // done
@@ -302,7 +301,7 @@ LeafNode::LeafNode(FPTree* t) {
 
     int nn = LEAF_DEGREE * 2;
     bitmapSize = (nn + 7) / 8;    
-    pAllocator->getLeaf(pPointer,pmem_addr);
+    PAllocator::getAllocator()->getLeaf(pPointer,pmem_addr);
     
     // the pointer below are all pmem address based on pmem_addr
     bitmap = (Byte*)pmem_addr;
@@ -327,7 +326,7 @@ LeafNode::LeafNode(PPointer p, FPTree* t) {
     bitmapSize = (nn + 7) / 8;     
    
     pPointer = p;
-    pmem_addr = pAllocator->getLeafPmemAddr(p);
+    pmem_addr = PAllocator::getAllocator()->getLeafPmemAddr(p);
     
     // the pointer below are all pmem address based on pmem_addr
     bitmap = (Byte*)pmem_addr;
@@ -361,11 +360,11 @@ KeyNode* LeafNode::insert(const Key& k, const Value& v) {
 }
 
 inline void setBit(Byte *bitmap,int slot){
-    bitmap[slot / 8] |= 0x01>>(7-(slot % 8));
+    bitmap[slot / 8] |= 0x01<<(7-(slot % 8));
 }
 
 inline void clearBit(Byte *bitmap, int slot){
-    bitmap[slot / 8] &= ~(0x01>>(7-(slot % 8)));
+    bitmap[slot / 8] &= ~(0x01<<(7-(slot % 8)));
 }
 
 // insert into the leaf node that is assumed not full
@@ -472,11 +471,11 @@ bool LeafNode::update(const Key& k, const Value& v) {
 // if the entry can not be found, return the max Value
 Value LeafNode::find(const Key& k) {
     // TODO:
-    int i;
-    for (i = 0; i < 2 * degree; i++) {
-        if (getBit(i) && getValue(i) == getKey(i) && getKey(i) == k) {
-            return getValue(i);
-        }
+    int slot;
+    for (slot = 0; slot < 2 * degree; slot++) {
+        Key currentKey = kv[slot].k;
+        if(getBit(slot) == 1 && fingerprints[slot] == keyHash(k) && currentKey == k)
+            return kv[slot].v;
     }
     return MAX_VALUE;
 }
