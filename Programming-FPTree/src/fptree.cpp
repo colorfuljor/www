@@ -96,7 +96,7 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
             insertNonFull(newChild->key, newChild->node);
             newChild = split();
             if (this->isRoot) {
-                this->isRoot == false;
+                this->isRoot = false;
                 InnerNode *newRoot = new InnerNode(this->degree, this->tree, true);
                 newRoot->childrens[newRoot->nChild++] = this;
                 newRoot->insertNonFull(newChild->key, newChild->node);
@@ -141,7 +141,7 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
                 insertNonFull(newChild->key, newChild->node);
                 newChild = split();
                 if (this->isRoot) {
-                    this->isRoot == false;
+                    this->isRoot = false;
                     InnerNode *newRoot = new InnerNode(this->degree, this->tree, true);
                     newRoot->childrens[newRoot->nChild++] = this;
                     newRoot->insertNonFull(newChild->key, newChild->node);
@@ -157,7 +157,7 @@ KeyNode* InnerNode::insertLeaf(const KeyNode& leaf) {
             insertNonFull(leaf.key, leaf.node);
             newChild = split();
             if (this->isRoot) {
-                    this->isRoot == false;
+                    this->isRoot = false;
                     InnerNode *newRoot = new InnerNode(this->degree, this->tree, true);
                     newRoot->childrens[newRoot->nChild++] = this;
                     newRoot->insertNonFull(newChild->key, newChild->node);
@@ -249,14 +249,14 @@ bool InnerNode::update(const Key& k, const Value& v) {
 
 // find the target value with the search key, return MAX_VALUE if it fails.
 Value InnerNode::find(const Key& k) {
-    // TODO:
+    // done
     int index = findIndex(k);
     return childrens[index]->find(k);
 }
 
 // get the children node of this InnerNode
 Node* InnerNode::getChild(const int& idx) {
-    // TODO:
+    // done
     if (idx < this->nChild) {
         return this->childrens[idx];
     }
@@ -470,7 +470,7 @@ bool LeafNode::update(const Key& k, const Value& v) {
 
 // if the entry can not be found, return the max Value
 Value LeafNode::find(const Key& k) {
-    // TODO:
+    // done
     int slot;
     for (slot = 0; slot < 2 * degree; slot++) {
         Key currentKey = kv[slot].k;
