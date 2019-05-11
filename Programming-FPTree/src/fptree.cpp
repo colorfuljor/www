@@ -76,7 +76,7 @@ KeyNode* InnerNode::insert(const Key& k, const Value& v) {
             LeafNode *newLeaf = new LeafNode(tree);
             childrens[nChild++] = newLeaf;
         }
-        newChild = childrens[1]->insert(k, v);
+        newChild = childrens[0]->insert(k, v);
         if (newChild != NULL) {
             insertLeaf(*newChild);
         }
@@ -250,7 +250,7 @@ bool InnerNode::update(const Key& k, const Value& v) {
 // find the target value with the search key, return MAX_VALUE if it fails.
 Value InnerNode::find(const Key& k) {
     // TODO:
-
+    
     return MAX_VALUE;
 }
 
