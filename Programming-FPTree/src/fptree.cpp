@@ -305,9 +305,9 @@ LeafNode::LeafNode(FPTree* t) {
     
     // the pointer below are all pmem address based on pmem_addr
     bitmap = (Byte*)pmem_addr;
-    pNext = (PPointer*)pmem_addr + bitmapSize;
-    fingerprints = (Byte*)pNext + sizeof(PPointer);
-    kv = (KeyValue*)fingerprints + nn * sizeof(Byte);
+    pNext = (PPointer*)(pmem_addr + bitmapSize);
+    fingerprints = (Byte*)(pNext) + sizeof(PPointer);
+    kv = (KeyValue*)(fingerprints + nn * sizeof(Byte));
 
     n = 0;
     prev = next = NULL;
@@ -330,9 +330,9 @@ LeafNode::LeafNode(PPointer p, FPTree* t) {
     
     // the pointer below are all pmem address based on pmem_addr
     bitmap = (Byte*)pmem_addr;
-    pNext = (PPointer*)pmem_addr + bitmapSize;
-    fingerprints = (Byte*)pNext + sizeof(PPointer);
-    kv = (KeyValue*)fingerprints + nn * sizeof(Byte);
+    pNext = (PPointer*)(pmem_addr + bitmapSize);
+    fingerprints = (Byte*)(pNext) + sizeof(PPointer);
+    kv = (KeyValue*)(fingerprints + nn * sizeof(Byte));
     
     n = 0;
     prev = next = NULL;
