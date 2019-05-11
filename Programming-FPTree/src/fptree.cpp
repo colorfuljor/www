@@ -571,7 +571,6 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO:
-
     
     return false;
 }
