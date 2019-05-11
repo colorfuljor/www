@@ -298,7 +298,7 @@ LeafNode::LeafNode(FPTree* t) {
     // DONE
     tree = t;
     isLeaf = true;
-    degree = t;
+    degree = LEAF_DEGREE;
 
     int nn = LEAF_DEGREE * 2;
     bitmapSize = (nn + 7) / 8;    
