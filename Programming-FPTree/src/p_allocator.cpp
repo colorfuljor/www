@@ -137,6 +137,9 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
     leafGroup.write((char*)&usedNum,sizeof(usedNum));
     leafGroup.write((char*)&bitmap,sizeof(bitmap));
     leafGroup.close();
+    if (maxFileId == 2 && usedNum == 1) {
+        startLeaf = p;
+    }
     return true;
 }
 

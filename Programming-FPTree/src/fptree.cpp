@@ -384,7 +384,7 @@ void LeafNode::insertNonFull(const Key& k, const Value& v) {
     setBit(bitmap,slot);
     // bitmap[slot / 8] |= 0x01>>(7-(slot % 8));
     n++;
-    persist();
+    // persist();
 }
 
 // split the leaf node
@@ -394,12 +394,13 @@ KeyNode* LeafNode::split() {
     Key split_key = findSplitKey();
     
     LeafNode *new_leaf_node = new LeafNode(tree);
-    if(this->prev != NULL)
-        this->prev->next = new_leaf_node;
-    new_leaf_node->prev = this->prev;
-    this->prev = new_leaf_node;
-    new_leaf_node->next = this;
-    pNext = &(this->prev->pPointer);
+    new_leaf_node->next = this->next;
+    if (this->next != NULL)
+        this->next->prev = new_leaf_node;
+    this->next = new_leaf_node;
+    new_leaf_node->prev = this;
+    *pNext = this->next->pPointer;
+    persist();
 
     for(int i = 0; i < LEAF_DEGREE * 2;i++)
         if(getBit(i) && kv[i].k >= split_key)
@@ -497,7 +498,7 @@ int LeafNode::findFirstZero() {
 void LeafNode::persist() {
     // TODO:
     size_t len =LEAF_GROUP_HEAD+LEAF_GROUP_AMOUNT*calLeafSize();
-    pmem_persist(pmem_addr, len);
+    pmem_persist(pmem_addr, calLeafSize());
 }
 
 // call by the ~FPTree(), delete the whole tree
@@ -580,8 +581,10 @@ bool FPTree::bulkLoading() {
 
 
     PPointer start = pAllocator->getStartPointer();
-    if(!pAllocator->ifLeafUsed(start))
+    if(!pAllocator->ifLeafUsed(start)) {
+        // cout << "false" << endl;
         return false;
+    }
 
     uint64_t leaf_amount = LEAF_GROUP_AMOUNT*(pAllocator->getMaxFileId() - 1) - pAllocator->getFreeNum();
     for(uint64_t i = 0; i < leaf_amount; i++){
