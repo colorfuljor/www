@@ -571,12 +571,12 @@ void FPTree::printTree() {
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
     // TODO:
-<<<<<<< HEAD
     PAllocator *pAllocator = PAllocator::getAllocator();
     //1. read data file : not exist -> return false
-    //2.
-=======
+    //2. exitst -> call  PAllocator -> leave sort
+    //3. insert return true
+    if(pAllocator->getMaxFileId() == 1)
+        return false;
     
->>>>>>> ffc194b97c1ad3376be34f74362fcc5e1715ec8d
-    return false;
+    
 }
