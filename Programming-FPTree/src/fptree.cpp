@@ -248,8 +248,10 @@ void InnerNode::removeChild(const int& keyIdx, const int& childIdx) {
 
 // update the target entry, return true if the update succeed.
 bool InnerNode::update(const Key& k, const Value& v) {
-    // TODO:
-    return false;
+    // done
+    int index = findIndex(k);
+
+    return childrens[index]->update(k, v);
 }
 
 // find the target value with the search key, return MAX_VALUE if it fails.
@@ -473,6 +475,16 @@ bool LeafNode::remove(const Key& k, const int& index, InnerNode* const& parent, 
 bool LeafNode::update(const Key& k, const Value& v) {
     bool ifUpdate = false;
     // TODO:
+    int slot;
+    for (slot = 0; slot < 2 * degree; slot++) {
+        Key currentKey = kv[slot].k;
+        if(getBit(slot) == 1 && fingerprints[slot] == keyHash(k) && currentKey == k) {
+            kv[slot].v = v;
+            ifUpdate = true;
+            persist();
+            break;
+        }
+    }
     return ifUpdate;
 }
 
@@ -600,7 +612,7 @@ bool FPTree::bulkLoading() {
         KeyNode key_temp;
         key_temp.key = leaf_temp->getKey(0);
         for (int j = 1; j < leaf_temp->n; j++) {
-            if (key_temp.key < leaf_temp->getKey(j))
+            if (key_temp.key > leaf_temp->getKey(j))
                 key_temp.key = leaf_temp->getKey(j);
         }
         key_temp.node = leaf_temp;
