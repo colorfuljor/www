@@ -599,6 +599,10 @@ bool FPTree::bulkLoading() {
         LeafNode *leaf_temp = new LeafNode(start, this);
         KeyNode key_temp;
         key_temp.key = leaf_temp->getKey(0);
+        for (int i = 1; i < leaf_temp->n; i++) {
+            if (key_temp.key < leaf_temp->getKey(i))
+                key_temp.key = leaf_temp->getKey(i);
+        }
         key_temp.node = leaf_temp;
         root->insertLeaf(key_temp);
 
