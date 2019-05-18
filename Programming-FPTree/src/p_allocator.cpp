@@ -140,6 +140,7 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
     if (maxFileId == 2 && usedNum == 1) {
         startLeaf = p;
     }
+    persistCatalog();
     return true;
 }
 
@@ -185,6 +186,11 @@ bool PAllocator::freeLeaf(PPointer p) {
     in.write((char*)&(bit), sizeof(Byte));
     freeList.push_back(p);
     freeNum++;
+    if (startLeaf == p) {
+        int bitmapSize = LEAF_DEGREE * 2 / 8;
+        startLeaf = *((PPointer*)(getLeafPmemAddr(p) + bitmapSize));
+    }
+    persistCatalog();
     return true;
 }
 
@@ -232,6 +238,7 @@ bool PAllocator::newLeafGroup() {
         freeNum += LEAF_GROUP_AMOUNT;   
         maxFileId++;    
         leafGroup.close();
+        persistCatalog();
         return true;
     }
     return false;
