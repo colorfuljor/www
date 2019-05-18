@@ -10,6 +10,10 @@ DBMS Project
 3. 5月11日-5月18日：FPTreeDB查询和更新操作并通过相关测试（对应fptree.cpp的实现和fptree_test.cpp部分的运行）
 4. 5月18日-5月31日：FPTreeDB删除操作和所有剩下实现以及测试（对应fptree.cpp的实现和fptree_test.cpp所有的运行）
 ## 使用方法（现仅供测试）
+[2019/5/18]可进行系统查询和更新操作的测试
+1. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
+2. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试系统分配叶子空间，./fptree_test即可测试叶子结点的查询和更新操作
+
 [2019/5/11]可进行系统分配叶子空间以及树节点插入的测试
 1. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
 2. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试系统分配叶子空间，./fptree_test即可测试叶子结点的插入操作  
@@ -20,6 +24,11 @@ DBMS Project
 3. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试  
 
 ## 实现进度
+[2019/5/18]完成树的叶子节点的查询、更新
+1. 完成InnerNode::find(const Key& k)递归地查询，最终调用LeafNode::find(const Key& k)循环查询到符合条件的键值，查询失败则返回MAX_VALUE
+2. 完成InnerNode::update(const Key& k, const Value& v)递归地查询，最终调用LeafNode::update(const Key& k, const Value& v)进行实际地键值更新，查询方式与find函数相同，更新后需调用persist()进行数据持久化
+3. 修补p_allocator.cpp中getleaf与freeleaf的关于startLeaf的更新，并增加了数据持久化
+
 [2019/5/11]完成树的叶子节点的插入、重载
 1. 完成InnerNode::findIndex(Key)二分查找找到键插入的合适下标
 2. 完成InnerNode::insertNonFull(Key,Node *)、InnerNode::insert(Key,value&)、InnerNode::insertLeave(Keynode&)递归的插入非叶子键值，最终插入叶子结点
