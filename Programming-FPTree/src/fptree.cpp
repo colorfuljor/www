@@ -466,7 +466,22 @@ PPointer LeafNode::getPPointer() {
 // need to call PAllocator to set this leaf free and reuse it
 bool LeafNode::remove(const Key& k, const int& index, InnerNode* const& parent, bool &ifDelete) {
     bool ifRemove = false;
-    // TODO:
+    // done
+    int slot;
+    for (slot = 0; slot < 2 * degree; slot++) {
+        Key currentKey = kv[slot].k;
+        if(getBit(slot) == 1 && fingerprints[slot] == keyHash(k) && currentKey == k) {
+            ifRemove = true;
+            break;
+        }
+    }
+    if (ifRemove) {
+        ifDelete = false;
+        clearBit(bitmap, slot);
+        n--;
+        if (n == 0) ifDelete = true;
+        persist();
+    }
     return ifRemove;
 }
 
