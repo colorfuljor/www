@@ -201,6 +201,53 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
     
     // recursive remove
     // TODO:
+    int nextindex = findIndex(k);
+    childrens[nextindex]->remove(k, nextindex ,this, ifDelete);
+    if(!ifDelete) return false;
+
+    //从this中移出 childrens[i]
+    for(int i = nextindex; i < nChild - 1; i++)
+        childrens[i] = childrens[i + 1];
+
+    for(int i = nextindex; i < nKeys - 1; i++)
+        keys[i] = keys[i + 1];
+
+    //接着检查最小占有情况
+    //通常情况
+    if(nKeys >= 2 * degree){
+        ifDelete = false;
+        return false;
+    }   
+
+    //else 当前节点元素不够
+    InnerNode * leftBro, * rightBro;
+    getBrother(index, parent, leftBro, rightBro);
+
+    //如果兄弟有多余项，重分布；否则，合并
+    //与左兄弟重分布
+    if(leftBro && leftBro->nKeys >= 2*degree)
+        redistributeLeft(index,leftBro,parent);
+
+    // 当前节点元素不够，与右兄弟重分布
+    else if(rightBro && rightBro->nKeys >= 2*degree)
+        redistributeRight(index,rightBro, parent);
+
+    // 当前节点元素不否，父亲只有两个孩子(左或右)且父亲节点为根节点，合并这三者
+    else if(parent->nChild == 2 && parent->isRoot){
+        if(leftBro)
+            mergeParentLeft(parent, leftBro);
+        else
+            mergeParentRight(parent, rightBro);
+    }    
+
+    // 当前节点元素不够，与左兄弟合并
+    else if(leftBro)
+        //key = ?
+        mergeLeft(leftBro,key);  
+
+    // 当前节点元素不够，与右兄弟合并
+    else if(rightBro)
+        mergeRight(rightBro,key);
     return ifRemove;
 }
 
