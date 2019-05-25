@@ -479,7 +479,10 @@ bool LeafNode::remove(const Key& k, const int& index, InnerNode* const& parent, 
         ifDelete = false;
         clearBit(bitmap, slot);
         n--;
-        if (n == 0) ifDelete = true;
+        if (n == 0) {
+            ifDelete = true;
+            PAllocator::getAllocator()->freeLeaf(this->pPointer);
+        }
         persist();
     }
     return ifRemove;
