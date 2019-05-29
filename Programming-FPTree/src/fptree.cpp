@@ -265,12 +265,12 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
 void InnerNode::getBrother(const int& index, InnerNode* const& parent, InnerNode* &leftBro, InnerNode* &rightBro) {
     // TODO:
     if (index > 0)  //结点不是第一个孩子，有左兄弟
-        leftBro = parent->childrens[index - 1];
+        leftBro = (InnerNode *)parent->childrens[index - 1];
     else
         leftBro = NULL;
 
     if (index < parent->nChild - 1) //结点不是最后一个孩子，有右兄弟
-        rightBro = parent->childrens[index + 1];
+        rightBro = (InnerNode *)parent->childrens[index + 1];
     else
         rightBro = NULL;
 }
@@ -289,12 +289,27 @@ void InnerNode::mergeParentRight(InnerNode* const& parent, InnerNode* const& rig
 // the left has more entries
 void InnerNode::redistributeLeft(const int& index, InnerNode* const& leftBro, InnerNode* const& parent) {
     // TODO:
+    InnerNode *indexChild = (InnerNode *)parent->childrens[index];
+    for(int i = indexChild->nKeys; i > 0 ; i--)
+        indexChild->keys[i] = indexChild->keys[i-1];
+    indexChild->keys[0] = leftBro->keys[nKeys-1];
+    indexChild->nKeys++;
+    leftBro->nKeys--;
+    parent->keys[index] = indexChild->keys[0];
+    
 }
 
 // this node and its right brother redistribute
 // the right has more entries
 void InnerNode::redistributeRight(const int& index, InnerNode* const& rightBro, InnerNode* const& parent) {
     // TODO:
+    InnerNode *indexChild = (InnerNode *)parent->childrens[index];
+    indexChild->keys[nKeys] = rightBro->keys[0];
+    for(int i = 0; i < rightBro->nKeys-1; i++)
+        rightBro->keys[i] = rightBro->keys[i+1];
+    indexChild->nKeys++;
+    rightBro->nKeys--;
+    parent->keys[index] = rightBro->keys[0];
 }
 
 // merge all entries to its left bro, delete this node after merging.
