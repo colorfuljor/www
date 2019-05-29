@@ -199,7 +199,7 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
     // only have one leaf
     // done
     int nextindex;
-    if (this->nChild == 1 && this->isRoot()) {
+    if (this->nChild == 1 && this->isRoot) {
         nextindex = 0;
     }
     else {
@@ -241,12 +241,12 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
     }    
     // 当前节点元素不够，与右兄弟合并
     else if(rightBro)
-        mergeRight(rightBro,key);
+        mergeRight(rightBro,k);
 
     // 当前节点元素不够，与左兄弟合并
     else if(leftBro)
         //key = ?
-        mergeLeft(leftBro,key);  
+        mergeLeft(leftBro,k);  
 
     return ifRemove;
 }
@@ -255,12 +255,12 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
 void InnerNode::getBrother(const int& index, InnerNode* const& parent, InnerNode* &leftBro, InnerNode* &rightBro) {
     // TODO:
     if (index > 0)  //结点不是第一个孩子，有左兄弟
-        leftBro = parent->childrens[index - 1];
+        leftBro = (InnerNode *)parent->childrens[index - 1];
     else
         leftBro = NULL;
 
     if (index < parent->nChild - 1) //结点不是最后一个孩子，有右兄弟
-        rightBro = parent->childrens[index + 1];
+        rightBro = (InnerNode *)parent->childrens[index + 1];
     else
         rightBro = NULL;
 }
@@ -279,7 +279,7 @@ void InnerNode::mergeParentRight(InnerNode* const& parent, InnerNode* const& rig
 // the left has more entries
 void InnerNode::redistributeLeft(const int& index, InnerNode* const& leftBro, InnerNode* const& parent) {
     // TODO:
-    InnerNode *indexChild = parent->childrens[index];
+    InnerNode *indexChild = (InnerNode *)parent->childrens[index];
     for(int i = indexChild->nKeys; i > 0 ; i--)
         indexChild->keys[i] = indexChild->keys[i-1];
     indexChild->keys[0] = leftBro->keys[nKeys-1];
@@ -293,7 +293,7 @@ void InnerNode::redistributeLeft(const int& index, InnerNode* const& leftBro, In
 // the right has more entries
 void InnerNode::redistributeRight(const int& index, InnerNode* const& rightBro, InnerNode* const& parent) {
     // TODO:
-    InnerNode *indexChild = parent->childrens[index];
+    InnerNode *indexChild = (InnerNode *)parent->childrens[index];
     indexChild->keys[nKeys] = rightBro->keys[0];
     for(int i = 0; i < rightBro->nKeys-1; i++)
         rightBro->keys[i] = rightBro->keys[i+1];
