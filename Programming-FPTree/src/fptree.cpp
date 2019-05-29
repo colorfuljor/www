@@ -214,7 +214,7 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
 
     //接着检查最小占有情况
     //通常情况
-    if(nKeys >= 2 * degree){
+    if(nKeys >= degree){
         ifDelete = false;
         return false;
     }   
@@ -225,11 +225,11 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
 
     //如果兄弟有多余项，重分布；否则，合并
     //与右兄弟重分布
-    if(rightBro && rightBro->nKeys >= 2*degree)
+    if(rightBro && rightBro->nKeys > degree)
         redistributeRight(index,rightBro, parent);
 
     // 当前节点元素不够，与左兄弟重分布
-    else if(leftBro && leftBro->nKeys >= 2*degree)
+    else if(leftBro && leftBro->nKeys > degree)
         redistributeLeft(index,leftBro,parent);
 
     // 当前节点元素不否，父亲只有两个孩子(左或右)且父亲节点为根节点，合并这三者
@@ -290,12 +290,13 @@ void InnerNode::redistributeRight(const int& index, InnerNode* const& rightBro, 
 // merge all entries to its left bro, delete this node after merging.
 void InnerNode::mergeLeft(InnerNode* const& leftBro, const Key& k) {
     // TODO:
-    
+
 }
 
 // merge all entries to its right bro, delete this node after merging.
 void InnerNode::mergeRight(InnerNode* const& rightBro, const Key& k) {
     // TODO:
+
 }
 
 // remove a children from the current node, used by remove func
