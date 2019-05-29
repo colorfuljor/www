@@ -279,12 +279,27 @@ void InnerNode::mergeParentRight(InnerNode* const& parent, InnerNode* const& rig
 // the left has more entries
 void InnerNode::redistributeLeft(const int& index, InnerNode* const& leftBro, InnerNode* const& parent) {
     // TODO:
+    InnerNode *indexChild = parent->childrens[index];
+    for(int i = indexChild->nKeys; i > 0 ; i--)
+        indexChild->keys[i] = indexChild->keys[i-1];
+    indexChild->keys[0] = leftBro->keys[nKeys-1];
+    indexChild->nKeys++;
+    leftBro->nKeys--;
+    parent->keys[index] = indexChild->keys[0];
+    
 }
 
 // this node and its right brother redistribute
 // the right has more entries
 void InnerNode::redistributeRight(const int& index, InnerNode* const& rightBro, InnerNode* const& parent) {
     // TODO:
+    InnerNode *indexChild = parent->childrens[index];
+    indexChild->keys[nKeys] = rightBro->keys[0];
+    for(int i = 0; i < rightBro->nKeys-1; i++)
+        rightBro->keys[i] = rightBro->keys[i+1];
+    indexChild->nKeys++;
+    rightBro->nKeys--;
+    parent->keys[index] = rightBro->keys[0];
 }
 
 // merge all entries to its left bro, delete this node after merging.
