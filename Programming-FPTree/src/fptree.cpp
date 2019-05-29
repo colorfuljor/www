@@ -195,22 +195,22 @@ KeyNode* InnerNode::split() {
 // return TRUE if the children node is deleted after removement.
 // the InnerNode need to be redistributed or merged after deleting one of its children node.
 bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent, bool &ifDelete) {
-    bool ifRemove = false;
+    bool ifRemove = true;
     // only have one leaf
-    // TODO:
-    
+    // done
+    int nextindex;
+    if (this->nChild == 1 && this->isRoot()) {
+        nextindex = 0;
+    }
+    else {
+        nextindex = findIndex(k);   
+    }
     // recursive remove
     // TODO:
-    int nextindex = findIndex(k);
     childrens[nextindex]->remove(k, nextindex ,this, ifDelete);
     if(!ifDelete) return false;
-
     //从this中移出 childrens[i]
-    for(int i = nextindex; i < nChild - 1; i++)
-        childrens[i] = childrens[i + 1];
-
-    for(int i = nextindex; i < nKeys - 1; i++)
-        keys[i] = keys[i + 1];
+    removeChild(nextindex - 1, nextindex);
 
     //接着检查最小占有情况
     //通常情况
@@ -224,36 +224,45 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
     getBrother(index, parent, leftBro, rightBro);
 
     //如果兄弟有多余项，重分布；否则，合并
-    //与左兄弟重分布
-    if(leftBro && leftBro->nKeys >= 2*degree)
-        redistributeLeft(index,leftBro,parent);
-
-    // 当前节点元素不够，与右兄弟重分布
-    else if(rightBro && rightBro->nKeys >= 2*degree)
+    //与右兄弟重分布
+    if(rightBro && rightBro->nKeys >= 2*degree)
         redistributeRight(index,rightBro, parent);
+
+    // 当前节点元素不够，与左兄弟重分布
+    else if(leftBro && leftBro->nKeys >= 2*degree)
+        redistributeLeft(index,leftBro,parent);
 
     // 当前节点元素不否，父亲只有两个孩子(左或右)且父亲节点为根节点，合并这三者
     else if(parent->nChild == 2 && parent->isRoot){
-        if(leftBro)
-            mergeParentLeft(parent, leftBro);
-        else
+        if(rightBro)
             mergeParentRight(parent, rightBro);
+        else
+            mergeParentLeft(parent, leftBro);
     }    
+    // 当前节点元素不够，与右兄弟合并
+    else if(rightBro)
+        mergeRight(rightBro,key);
 
     // 当前节点元素不够，与左兄弟合并
     else if(leftBro)
         //key = ?
         mergeLeft(leftBro,key);  
 
-    // 当前节点元素不够，与右兄弟合并
-    else if(rightBro)
-        mergeRight(rightBro,key);
     return ifRemove;
 }
 
 // If the leftBro and rightBro exist, the rightBro is prior to be used
 void InnerNode::getBrother(const int& index, InnerNode* const& parent, InnerNode* &leftBro, InnerNode* &rightBro) {
     // TODO:
+    if (index > 0)  //结点不是第一个孩子，有左兄弟
+        leftBro = parent->childrens[index - 1];
+    else
+        leftBro = NULL;
+
+    if (index < parent->nChild - 1) //结点不是最后一个孩子，有右兄弟
+        rightBro = parent->childrens[index + 1];
+    else
+        rightBro = NULL;
 }
 
 // merge this node, its parent and left brother(parent is root)
@@ -281,6 +290,7 @@ void InnerNode::redistributeRight(const int& index, InnerNode* const& rightBro, 
 // merge all entries to its left bro, delete this node after merging.
 void InnerNode::mergeLeft(InnerNode* const& leftBro, const Key& k) {
     // TODO:
+    
 }
 
 // merge all entries to its right bro, delete this node after merging.
@@ -291,6 +301,16 @@ void InnerNode::mergeRight(InnerNode* const& rightBro, const Key& k) {
 // remove a children from the current node, used by remove func
 void InnerNode::removeChild(const int& keyIdx, const int& childIdx) {
     // TODO:
+    if (nKeys > 0) {
+        for(int i = keyIdx; i < nKeys - 1; i++)
+            keys[i] = keys[i + 1];
+        nKeys--;
+    }
+    if (nChild > 0) {
+        for(int i = childIdx; i < nChild - 1; i++)
+            childrens[i] = childrens[i + 1];
+        nChild--;
+    }  
 }
 
 // update the target entry, return true if the update succeed.
