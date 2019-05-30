@@ -121,8 +121,10 @@ bool PAllocator::getLeaf(PPointer &p, char* &pmem_addr) {
     // TODO:finished
     if (freeList.empty())
         newLeafGroup();
+    
     p = freeList.back();
     freeList.pop_back();
+    
     pmem_addr = getLeafPmemAddr(p);
     freeNum--;
     string path=DATA_DIR + to_string(p.fileId);

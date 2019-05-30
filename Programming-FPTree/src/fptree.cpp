@@ -68,7 +68,6 @@ void InnerNode::insertNonFull(const Key& k, Node* const& node) {
 // return value is not NULL if split, returning the new child and a key to insert
 KeyNode* InnerNode::insert(const Key& k, const Value& v) {
     KeyNode* newChild = NULL;
-
     // 1.insertion to the first leaf(only one leaf)
     if (this->isRoot && this->nKeys == 0) {
         // done
@@ -478,9 +477,9 @@ LeafNode::LeafNode(FPTree* t) {
     tree = t;
     isLeaf = true;
     degree = LEAF_DEGREE;
-
     int nn = LEAF_DEGREE * 2;
     bitmapSize = (nn + 7) / 8;    
+    
     PAllocator::getAllocator()->getLeaf(pPointer,pmem_addr);
     
     // the pointer below are all pmem address based on pmem_addr
