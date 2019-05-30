@@ -56,7 +56,7 @@ int main()
     // TODO: load the workload in LevelDB
     int i;
     for (i = 0; i < READ_WRITE_NUM; i++) {
-        if (op[t] == 0) {
+        if (op[i] == 0) {
             status = db->Put(write_options, to_string(key[i]), to_string(key[i]));
             assert(status.ok());
             inserted++;
@@ -130,4 +130,6 @@ int main()
     printf("Run phase finishes: %lu/%lu items are inserted/searched\n", inserted, operation_num - inserted);
     printf("Run phase throughput: %f operations per second \n", READ_WRITE_NUM/single_time);	
     return 0;
+    fclose(ycsb_load);
+    fclose(yscb_run);
 }
