@@ -7,19 +7,19 @@ using namespace std;
 
 const string workload = "../workloads/";
 
-const string load = workload + "1w-rw-50-50-load.txt"; // TODO: the workload_load filename
-const string run  = workload + "1w-rw-50-50-run.txt"; // TODO: the workload_run filename
+const string load = workload + "1w-rw-50-50-load.txt"; // done
+const string run  = workload + "1w-rw-50-50-run.txt"; // done
 
 const string filePath = "";
 
-const int READ_WRITE_NUM = 10000; // TODO: how many operations
+const int READ_WRITE_NUM = 10000; // done: how many operations
 
 int main()
 {        
     leveldb::DB* db;
     leveldb::Options options;
     leveldb::WriteOptions write_options;
-    // TODO: open and initial the levelDB
+    // done: open and initial the levelDB
     options.create_if_missing = true;
     leveldb::Status status = leveldb::DB::Open(options, "/tmp/testdb", &db);
     assert(status.ok());
@@ -27,7 +27,7 @@ int main()
     uint64_t inserted = 0, queried = 0, t = 0;
     uint64_t* key = new uint64_t[2200000]; // the key and value are same
 //    bool* ifInsert = new bool[2200000]; // the operation is insertion or not
-    bool* op = new bool[2200000]; // the operation op 0:insert 1:delete 2:update 3:read
+    int* op = new int[2200000]; // the operation op 0:insert 1:delete 2:update 3:read
 	FILE *ycsb_load, *ycsb_run; // the files that store the ycsb operations
 	char *buf = NULL;
 	size_t len = 0;
@@ -35,7 +35,7 @@ int main()
     double single_time; // single operation time
 
     printf("Load phase begins \n");
-    // TODO: read the ycsb_load and store
+    // done: read the ycsb_load and store
     ycsb_load = (FILE*)malloc(sizeof(FILE));
     if ((ycsb_load = fopen(load.c_str(), "r")) == NULL) {
         printf("cannot open file!\n");
@@ -53,7 +53,7 @@ int main()
 
     clock_gettime(CLOCK_MONOTONIC, &start);
 
-    // TODO: load the workload in LevelDB
+    // done: load the workload in LevelDB
     int i;
     for (i = 0; i < READ_WRITE_NUM; i++) {
         if (op[i] == 0) {
@@ -72,7 +72,7 @@ int main()
 	int operation_num = 0;
     inserted = 0;		
 
-    // TODO:read the ycsb_run and store
+    // done:read the ycsb_run and store
     if ((ycsb_run = fopen(run.c_str(), "r")) == NULL) {
         printf("cannot open file!\n");
         return -1;
@@ -104,7 +104,7 @@ int main()
     }
     clock_gettime(CLOCK_MONOTONIC, &start);
 
-    // TODO: operate the levelDB
+    // done: operate the levelDB
     for (i = 0; i < operation_num; i++) {
     	//增其实就是改 因为key == value 
         if (op[i] == 0 && op[i] == 2) {
@@ -131,5 +131,5 @@ int main()
     printf("Run phase throughput: %f operations per second \n", READ_WRITE_NUM/single_time);	
     return 0;
     fclose(ycsb_load);
-    fclose(yscb_run);
+    fclose(ycsb_run);
 }
