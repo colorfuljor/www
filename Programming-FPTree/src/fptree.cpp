@@ -1,5 +1,6 @@
 #include"fptree/fptree.h"
 #include <algorithm>
+#include <queue>
 
 using namespace std;
 // Initial the new InnerNode
@@ -211,7 +212,8 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
     if (childrens[nextindex]->remove(k, nextindex ,this, ifDelete) == false) return false;
     if(!ifDelete) return true;
     //从this中移出 childrens[i]
-    removeChild(nextindex - 1, nextindex);
+    removeChild(nextindex, nextindex);
+    
 
     //接着检查最小占有情况
     //通常情况
@@ -247,7 +249,6 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
     // 当前节点元素不够，与右兄弟合并
     else if(rightBro) {
         mergeRight(rightBro, parent->keys[index]);
-        index = index + 1;
     }
         
 
@@ -263,7 +264,7 @@ bool InnerNode::remove(const Key& k, const int& index, InnerNode* const& parent,
 
 // If the leftBro and rightBro exist, the rightBro is prior to be used
 void InnerNode::getBrother(const int& index, InnerNode* const& parent, InnerNode* &leftBro, InnerNode* &rightBro) {
-    // TODO:
+    // done
     if (index > 0)  //结点不是第一个孩子，有左兄弟
         leftBro = (InnerNode *)parent->childrens[index - 1];
     else
@@ -278,11 +279,41 @@ void InnerNode::getBrother(const int& index, InnerNode* const& parent, InnerNode
 // merge this node, its parent and left brother(parent is root)
 void InnerNode::mergeParentLeft(InnerNode* const& parent, InnerNode* const& leftBro) {
     // TODO:
+    leftBro->keys[degree - 1] = parent->keys[0];
+    for (int i = degree, j = 0; this->nChild; i++, j++) {
+        leftBro->childrens[i] = this->childrens[j];
+        this->nChild--;
+        leftBro->nChild++;
+        if (this->nKeys > 0) {
+            leftBro->keys[i] = this->keys[j];
+            this->nKeys--;
+            leftBro->nKeys++;
+        }
+    }
+    this->isRoot = true;
+    this->tree->changeRoot(this);
+    delete parent;
+    delete this;
 }
 
 // merge this node, its parent and right brother(parent is root)
 void InnerNode::mergeParentRight(InnerNode* const& parent, InnerNode* const& rightBro) {
     // TODO:
+    keys[degree - 1] = parent->keys[0];
+    for (int i = degree, j = 0; rightBro->nChild; i++, j++) {
+        childrens[i] = rightBro->childrens[j];
+        rightBro->nChild--;
+        nChild++;
+        if (rightBro->nKeys > 0) {
+            keys[i] = rightBro->keys[j];
+            rightBro->nKeys--;
+            nKeys++;
+        }
+    }
+    this->isRoot = true;
+    this->tree->changeRoot(this);
+    delete parent;
+    delete rightBro;
 }
 
 // this node and its left brother redistribute
@@ -315,7 +346,6 @@ void InnerNode::redistributeRight(const int& index, InnerNode* const& rightBro, 
 // merge all entries to its left bro, delete this node after merging.
 void InnerNode::mergeLeft(InnerNode* const& leftBro, const Key& k) {
     // done
-    leftBro->keys[degree - 1] = k;
     for (int i = degree, j = 0; this->nChild; i++, j++) {
         leftBro->childrens[i] = this->childrens[j];
         this->nChild--;
@@ -331,7 +361,6 @@ void InnerNode::mergeLeft(InnerNode* const& leftBro, const Key& k) {
 // merge all entries to its right bro, delete this node after merging.
 void InnerNode::mergeRight(InnerNode* const& rightBro, const Key& k) {
     // done
-    keys[degree - 1] = k;
     for (int i = degree, j = 0; rightBro->nChild; i++, j++) {
         childrens[i] = rightBro->childrens[j];
         rightBro->nChild--;
@@ -346,9 +375,10 @@ void InnerNode::mergeRight(InnerNode* const& rightBro, const Key& k) {
 
 // remove a children from the current node, used by remove func
 void InnerNode::removeChild(const int& keyIdx, const int& childIdx) {
-    // TODO:
+    // done
     if (nKeys > 0) {
-        for(int i = keyIdx; i < nKeys - 1; i++)
+        //如果是最后一个孩子，即此孩子没有右兄弟，如果需要remove只能remove左边的key
+        for(int i = (keyIdx != nKeys ? keyIdx : keyIdx - 1); i < nKeys - 1; i++)
             keys[i] = keys[i + 1];
         nKeys--;
     }
@@ -466,8 +496,9 @@ LeafNode::LeafNode(PPointer p, FPTree* t) {
 }
 
 LeafNode::~LeafNode() {
-    // TODO:
+    // done
     persist();
+    PAllocator::getAllocator()->freeLeaf(this->pPointer);
 }
 
 // insert an entry into the leaf, need to split it if it is full
@@ -595,7 +626,6 @@ bool LeafNode::remove(const Key& k, const int& index, InnerNode* const& parent, 
         n--;
         if (n == 0) {
             ifDelete = true;
-            PAllocator::getAllocator()->freeLeaf(this->pPointer);
         }
         persist();
     }
@@ -606,7 +636,7 @@ bool LeafNode::remove(const Key& k, const int& index, InnerNode* const& parent, 
 // return TRUE if the update succeed
 bool LeafNode::update(const Key& k, const Value& v) {
     bool ifUpdate = false;
-    // TODO:
+    // done
     int slot;
     for (slot = 0; slot < 2 * degree; slot++) {
         Key currentKey = kv[slot].k;
@@ -646,7 +676,7 @@ int LeafNode::findFirstZero() {
 // persist the entire leaf
 // use PMDK
 void LeafNode::persist() {
-    // TODO:
+    // done
     size_t len =LEAF_GROUP_HEAD+LEAF_GROUP_AMOUNT*calLeafSize();
     pmem_persist(pmem_addr, calLeafSize());
 }
@@ -715,9 +745,23 @@ Value FPTree::find(Key k) {
 // call the InnerNode and LeafNode print func to print the whole tree
 // TIPS: use Queue
 void FPTree::printTree() {
-    // TODO:
-    root->printNode();
-
+    // done
+    if (root == NULL) return;
+    queue<Node *> q;
+    Node * pN;
+    q.push(root);
+    while (!q.empty()) {
+        pN = q.front();
+        q.pop();
+        pN->printNode();
+        if (!pN->ifLeaf()) {
+            InnerNode * pIn = (InnerNode *)pN;
+            for (int i = 0; i < pIn->nChild; i++) {
+                if (pIn->childrens[i] != NULL)
+                    q.push(pIn->childrens[i]);
+            }
+        }
+    }
 }
 
 // bulkLoading the leaf files and reload the tree
@@ -725,7 +769,7 @@ void FPTree::printTree() {
 // if no tree is reloaded, return FALSE
 // need to call the PALlocator
 bool FPTree::bulkLoading() {
-    // TODO:
+    // done
     PAllocator *pAllocator = PAllocator::getAllocator();
     //1. read data file : not exist -> return false
     //2. exitst -> call  PAllocator -> leave sort
