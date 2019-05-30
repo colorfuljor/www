@@ -4,11 +4,6 @@ DBMS Project
 本系统主要是基于针对NVM优化的数据结构FPTree，实现一个简单的键值存储引擎FPTreeDB。我们通过将其包装成一个调用库，供用户程序使用并管理其数据存储，与LevelDB的使用方式类似。对外可用的数据基本操作有增（insert）删（remove）改（update）查（find）。在系统恢复操作上，使用BulkLoading的方式。系统实现上主要是非叶子结点节点的结构类B+Tree、叶子节点要用PMDK与NVM进行数据交互。
 ## 作者
 温鸿玮（17308164）、王俊焕（17308164）、王鑫基（17309084）
-## 实现时间计划
-1. 5月4日前：系统说明书，PAllocator实现并通过utility测试，LevelDB的使用以及测试（对应lycsb.cpp，p_allocator.cpp的实现和运行，utility_test.cpp的运行）
-2. 5月4日-5月11日：FPTreeDB插入和重载操作并通过相关测试（对应fptree.cpp的实现和fptree_test.cpp部分的运行）
-3. 5月11日-5月18日：FPTreeDB查询和更新操作并通过相关测试（对应fptree.cpp的实现和fptree_test.cpp部分的运行）
-4. 5月18日-5月31日：FPTreeDB删除操作和所有剩下实现以及测试（对应fptree.cpp的实现和fptree_test.cpp所有的运行）
 ## 使用方法
 1. 使用环境  
 Linux Ubuntu 14.0.4及以上
@@ -17,26 +12,32 @@ Linux Ubuntu 14.0.4及以上
 
 ## 测试方法
 [2019/5/30]可进行fptree与levelDB的性能对比测试  
-1. 在终端进入到./Programming-FPTree/src 输入make编译运行出可运行文件(先进行make clean)  
-2. 进入./Progaming-FPTree/src 输入./bin/ycsb即可进行性能对比测试  
+1. 在终端进入到```./Programming-FPTree/src``` 输入```make```编译运行出可运行文件(先进行```make clean```)  
+2. 进入```./Progaming-FPTree/src``` 输入```./bin/ycsb```即可进行性能对比测试  
 3. 如果希望修改所用的测试文件，可以修改```./Programing-FPTree/src/ycsb.cpp```行11、12、14的文件名，文件路径在```./Programing-FPTree/workload```中  
 
 [2019/5/30]可进行删除操作的测试
-1. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
-2. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试系统分配叶子空间，./fptree_test即可测试叶子结点的删除操作
+1. 在终端进入到```./Programing-FPTree/test``` 输入```make```编译运行出可运行文件
+2. 进入```./Programing-FPTree/test/bin``` 输入```./utility_test```即可测试系统分配叶子空间，````./fptree_test```即可测试叶子结点的删除操作
 
 [2019/5/18]可进行系统查询和更新操作的测试
-1. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
-2. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试系统分配叶子空间，./fptree_test即可测试叶子结点的查询和更新操作
+1. 在终端进入到```./Programing-FPTree/test``` 输入```make```编译运行出可运行文件
+2. 进入```./Programing-FPTree/test/bin``` 输入```./utility_test```即可测试系统分配叶子空间，```./fptree_test```即可测试叶子结点的查询和更新操作
 
 [2019/5/11]可进行系统分配叶子空间以及树节点插入的测试
-1. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
-2. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试系统分配叶子空间，./fptree_test即可测试叶子结点的插入操作  
+1. 在终端进入到```./Programing-FPTree/test``` 输入```make```编译运行出可运行文件
+2. 进入```./Programing-FPTree/test/bin``` 输入./utility_test即可测试系统分配叶子空间，```./fptree_test```即可测试叶子结点的插入操作  
 
 [2019/5/4]系统尚未完成，只能进行系统分配节点的测试，增删改查功能尚未完成。
-1. 进入到./Programing-FPTree/test 新建data文件夹或修改p_allocator.h内路径
-2. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
-3. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试  
+1. 进入到```./Programing-FPTree/test``` 新建data文件夹或修改p_allocator.h内路径
+2. 在终端进入到```./Programing-FPTree/test``` 输入```make```编译运行出可运行文件
+3. 进入```./Programing-FPTree/test/bin``` 输入```./utility_test```即可测试  
+
+## 实现时间计划
+1. 5月4日前：系统说明书，PAllocator实现并通过utility测试，LevelDB的使用以及测试（对应lycsb.cpp，p_allocator.cpp的实现和运行，utility_test.cpp的运行）
+2. 5月4日-5月11日：FPTreeDB插入和重载操作并通过相关测试（对应fptree.cpp的实现和fptree_test.cpp部分的运行）
+3. 5月11日-5月18日：FPTreeDB查询和更新操作并通过相关测试（对应fptree.cpp的实现和fptree_test.cpp部分的运行）
+4. 5月18日-5月31日：FPTreeDB删除操作和所有剩下实现以及测试（对应fptree.cpp的实现和fptree_test.cpp所有的运行）
 
 ## 实现进度  
 [2019/5/30]完成树的叶子结点的删除   
