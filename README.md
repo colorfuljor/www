@@ -9,7 +9,21 @@ DBMS Project
 2. 5月4日-5月11日：FPTreeDB插入和重载操作并通过相关测试（对应fptree.cpp的实现和fptree_test.cpp部分的运行）
 3. 5月11日-5月18日：FPTreeDB查询和更新操作并通过相关测试（对应fptree.cpp的实现和fptree_test.cpp部分的运行）
 4. 5月18日-5月31日：FPTreeDB删除操作和所有剩下实现以及测试（对应fptree.cpp的实现和fptree_test.cpp所有的运行）
-## 使用方法（现仅供测试）
+## 使用方法
+1. 源码下载，使用
+```
+git clone
+```
+## 测试方法
+[2019/5/30]可进行删除操作的测试以及fptree与levelDB的性能对比测试  
+（性能对比的测试）
+1. 在终端进入到./Programming-FPTree/src 输入make编译运行出可运行文件(先进行make clean) 
+2. 进入./Progaming-FPTree/src 输入./bin/ycsb即可进行性能对比测试  
+3. 如果希望修改所用的测试文件，可修改 ./Programing-FPTree/src/ycsb.cpp 行11、12、14的文件名，文件路径在./Programing-FPTree/workload中  
+（删除操作的测试）   
+1. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
+2. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试系统分配叶子空间，./fptree_test即可测试叶子结点的删除操作
+
 [2019/5/18]可进行系统查询和更新操作的测试
 1. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
 2. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试系统分配叶子空间，./fptree_test即可测试叶子结点的查询和更新操作
@@ -23,7 +37,12 @@ DBMS Project
 2. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
 3. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试  
 
-## 实现进度
+## 实现进度  
+[2019/5/30]完成树的叶子结点的删除   
+1.完成InnerNode::remove()相关操作，其间递归调用remove(),遇到子结点删除不满足degree的约束条件时就重定位，如果不能重定位就进行merge操作。  
+2.完成InnerNode::restributeLeft()、InnerNode::restributeRight()分别为与左兄弟重定位操作、右兄弟重定位操作。  
+3.完成InnerNode::mergeLeft()、InnerNode::mergeRight()、InnerNode::mergeParentLeft()、InnerNode::mergeParentRight()的合并操作。 
+
 [2019/5/18]完成树的叶子节点的查询、更新
 1. 完成InnerNode::find(const Key& k)递归地查询，最终调用LeafNode::find(const Key& k)循环查询到符合条件的键值，查询失败则返回MAX_VALUE
 2. 完成InnerNode::update(const Key& k, const Value& v)递归地查询，最终调用LeafNode::update(const Key& k, const Value& v)进行实际地键值更新，查询方式与find函数相同，更新后需调用persist()进行数据持久化
