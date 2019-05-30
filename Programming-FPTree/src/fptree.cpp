@@ -328,10 +328,19 @@ void InnerNode::redistributeLeft(const int& index, InnerNode* const& leftBro, In
     InnerNode *indexChild = (InnerNode *)parent->childrens[index];
     for(int i = indexChild->nKeys; i > 0 ; i--)
         indexChild->keys[i] = indexChild->keys[i-1];
-    indexChild->keys[0] = leftBro->keys[nKeys-1];
+    for(int i = indexChild->nChild; i > 0; i--)
+        indexChild->childrens[i] = indexChild->childrens[i-1];
+    
+    indexChild->keys[0] = parent->keys[index-1];
+    indexChild->childrens[0] = leftBro->childrens[nChild-1];
+    parent->keys[index-1] = leftBro->keys[nKeys-1];
+
     indexChild->nKeys++;
+    indexChild->nChild++;
     leftBro->nKeys--;
-    parent->keys[index] = indexChild->keys[0];
+    leftBro->nChild--;
+    //*************
+
     
 }
 
@@ -339,13 +348,27 @@ void InnerNode::redistributeLeft(const int& index, InnerNode* const& leftBro, In
 // the right has more entries
 void InnerNode::redistributeRight(const int& index, InnerNode* const& rightBro, InnerNode* const& parent) {
     // TODO:
-    InnerNode *indexChild = (InnerNode *)parent->childrens[index];
+    /*InnerNode *indexChild = (InnerNode *)parent->childrens[index];
     indexChild->keys[nKeys] = rightBro->keys[0];
     for(int i = 0; i < rightBro->nKeys-1; i++)
         rightBro->keys[i] = rightBro->keys[i+1];
     indexChild->nKeys++;
     rightBro->nKeys--;
+    parent->keys[index] = rightBro->keys[0];*/
+
+    //***************
+    this->childrens[nChild] = rightBro->childrens[0];
+    this->nChild++;
+    rightBro->nChild--;
+    
+    this->keys[nKeys] = parent->keys[index];
     parent->keys[index] = rightBro->keys[0];
+    rightBro->nKeys--;
+    this->nKeys++;
+    for(int i = 0; i < nKeys; i++)
+        rightBro->keys[i] = rightBro->keys[i + 1];
+    for(int i = 0; i < nChild; i++)
+        rightBro->childrens[i] = rightBro->childrens[i+1];
 }
 
 // merge all entries to its left bro, delete this node after merging.
