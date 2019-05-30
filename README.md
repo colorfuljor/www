@@ -10,17 +10,18 @@ DBMS Project
 3. 5月11日-5月18日：FPTreeDB查询和更新操作并通过相关测试（对应fptree.cpp的实现和fptree_test.cpp部分的运行）
 4. 5月18日-5月31日：FPTreeDB删除操作和所有剩下实现以及测试（对应fptree.cpp的实现和fptree_test.cpp所有的运行）
 ## 使用方法
-1. 源码下载，使用
-```
-git clone
-```
+1. 使用环境  
+Linux Ubuntu 14.0.4及以上
+2. 源码下载，使用  
+```git clone https://github.com/colorfuljor/www.git```
+
 ## 测试方法
-[2019/5/30]可进行删除操作的测试以及fptree与levelDB的性能对比测试  
-（性能对比的测试）
-1. 在终端进入到./Programming-FPTree/src 输入make编译运行出可运行文件(先进行make clean) 
+[2019/5/30]可进行fptree与levelDB的性能对比测试  
+1. 在终端进入到./Programming-FPTree/src 输入make编译运行出可运行文件(先进行make clean)  
 2. 进入./Progaming-FPTree/src 输入./bin/ycsb即可进行性能对比测试  
-3. 如果希望修改所用的测试文件，可修改 ./Programing-FPTree/src/ycsb.cpp 行11、12、14的文件名，文件路径在./Programing-FPTree/workload中  
-（删除操作的测试）   
+3. 如果希望修改所用的测试文件，可以修改```./Programing-FPTree/src/ycsb.cpp```行11、12、14的文件名，文件路径在```./Programing-FPTree/workload```中  
+
+[2019/5/30]可进行删除操作的测试
 1. 在终端进入到./Programing-FPTree/test 输入make编译运行出可运行文件
 2. 进入./Programing-FPTree/test/bin 输入./utility_test即可测试系统分配叶子空间，./fptree_test即可测试叶子结点的删除操作
 
