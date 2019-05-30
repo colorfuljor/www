@@ -9,7 +9,9 @@ DBMS Project
 Linux Ubuntu 14.0.4及以上
 2. 源码下载，使用  
 ```git clone https://github.com/colorfuljor/www.git```
-
+3. 编译链接
+在main函数中编写代码  
+进入```./Programming-FPTree/src```输入```make```编译出可运行文件  
 ## 测试方法
 [2019/5/30]可进行fptree与levelDB的性能对比测试  
 1. 在终端进入到```./Programming-FPTree/src``` 输入```make```编译运行出可运行文件(先进行```make clean```)  
