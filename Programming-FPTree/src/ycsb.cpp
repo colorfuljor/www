@@ -18,7 +18,8 @@ int main()
     FPTree fptree(1028);
     uint64_t inserted = 0, queried = 0, t = 0;
     uint64_t* key = new uint64_t[2200000];
-    bool* ifInsert = new bool[2200000];
+    // bool* ifInsert = new bool[2200000];
+    bool* op = new bool[2200000]; // the operation op 0:insert 1:delete 2:update 3:read
 	FILE *ycsb, *ycsb_read;
 	char *buf = NULL;
 	size_t len = 0;
