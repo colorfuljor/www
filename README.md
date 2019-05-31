@@ -22,9 +22,7 @@ Linux Ubuntu 14.0.4及以上
 4. ```bool FPTree::remove(Key k)```向FPTree中删除键k对应的数据项，成功则返回true，否则返回else  
 5. ```bool FPTree::update(Key k, Value v); ```将FPTree中键k对应的值更新为v  
 6. ```Value FPTree::find(Key k); ```获得FPTree中键k对应的值  
-7. ```InnerNode* FPTree::getRoot()```获得FPTree的根结点
-8. ```void FPTree::changeRoot(InnerNode* newRoot)```更改FPTree的根节点
-9. ```void FPTree::printTree()```以字符串形式打印树  
+7. ```void FPTree::printTree()```以字符串形式打印树  
 ## 测试方法
 ### [2019/5/30]可进行fptree与levelDB的性能对比测试  
 1. 在终端进入到```./Programming-FPTree/src``` 输入```make```编译运行出可运行文件(先进行```make clean```)  
