@@ -5,14 +5,26 @@ DBMS Project
 ## 作者
 温鸿玮（17308164）、王俊焕（17308164）、王鑫基（17309084）
 ## 使用方法
-1. 使用环境  
+### 使用环境  
 Linux Ubuntu 14.0.4及以上
-2. 源码下载，使用  
+### 源码下载，使用  
 ```git clone https://github.com/colorfuljor/www.git```
-3. 编译链接  
+### 编译链接  
 在main函数中编写自己所用代码  
 进入```./Programming-FPTree/src```输入```make```编译出可运行文件  
 （若要在自己的代码文件里书写代码，最后要链接```fptree.cpp、p_allocator.cpp、utility.cpp```）  
+### 函数接口  
+1. ```FPTree::FPTree(uint64_t degree)```构造一个度为degree的FPTree  
+2. FPTree中键值对数据类型  
+```typedef uint64_t  Key;    // key(8 byte)```  
+```typedef uint64_t  Value;  // value(8 byte)```  
+3. ```void FPTree::insert(Key k, Value v)```向FPTree中插入键值对<k,v>  
+4. ```bool FPTree::remove(Key k)```向FPTree中删除键k对应的数据项，成功则返回true，否则返回else  
+5. ```bool FPTree::update(Key k, Value v); ```将FPTree中键k对应的值更新为v  
+6. ```Value FPTree::find(Key k); ```获得FPTree中键k对应的值  
+7. ```InnerNode* FPTree::getRoot()```获得FPTree的根结点
+8. ```void FPTree::changeRoot(InnerNode* newRoot)```更改FPTree的根节点
+9. ```void FPTree::printTree()```以字符串形式打印树  
 ## 测试方法
 [2019/5/30]可进行fptree与levelDB的性能对比测试  
 1. 在终端进入到```./Programming-FPTree/src``` 输入```make```编译运行出可运行文件(先进行```make clean```)  
