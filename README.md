@@ -23,8 +23,38 @@ Linux Ubuntu 14.0.4及以上
 5. ```bool FPTree::update(Key k, Value v); ```将FPTree中键k对应的值更新为v  
 6. ```Value FPTree::find(Key k); ```获得FPTree中键k对应的值  
 7. ```void FPTree::printTree()```以字符串形式打印树  
+
+## fptree与levelDB性能对比
+
+
+![](asset/220w.png)
+220w-50-50测试中，发现fptree插入效率是levelDB的6倍以上，而RUN阶段效率却比较低。
+
+现在分析下面三次测试，三次测试insert/search比率依次增大。  
+load阶段fptree有绝对优势。
+run阶段fptree的吞吐量依次为18264, 29092, 43072，
+levelDB吞吐量依次为10928， 9323， 8305。  
+由此可见fptree插入效率高，查询效率低，而levelDB则相反。
+![](asset/1w-25-75.png)
+
+![](asset/1w-50-50.png)
+
+
+![](asset/1w-75-25.png)
+
+### fptree查询效率低的原因
+
+fptree叶子节点中的键值对是无序的，我们使用了fingerprint，在对比fingerprint时调用的keyHash,我们注释掉相关函数，不使用fingerprint机制后，发现性能大大提升，fptree的插入删除都比levelDB效率高，如下图。  
+fptree中的fingerprint是否有存在的必要呢？
+
+![](asset/200w-no-keyHash.png)
+
+
+
 ## 测试方法
+
 ### [2019/5/30]可进行fptree与levelDB的性能对比测试  
+
 1. 在终端进入到```./Programming-FPTree/src``` 输入```make```编译运行出可运行文件(先进行```make clean```)  
 2. 进入```./Progaming-FPTree/src``` 输入```./bin/ycsb```即可进行性能对比测试  
 3. 如果希望修改所用的测试文件，可以修改```./Programing-FPTree/src/ycsb.cpp```行11、12、14的文件名，文件路径在```./Programing-FPTree/workload```中  
