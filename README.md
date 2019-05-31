@@ -24,10 +24,11 @@ Linux Ubuntu 14.0.4及以上
 6. ```Value FPTree::find(Key k); ```获得FPTree中键k对应的值  
 7. ```void FPTree::printTree()```以字符串形式打印树  
 
-## fptree与levelDB性能对比
+## 测试与结果分析
 
+### fptree与levelDB性能对比
 
-![](asset/220w.png)
+![](asset/220w.png) 
 220w-50-50测试中，发现fptree插入效率是levelDB的6倍以上，而RUN阶段效率却比较低。
 
 现在分析下面三次测试，三次测试insert/search比率依次增大。  
@@ -39,7 +40,6 @@ levelDB吞吐量依次为10928， 9323， 8305。
 
 ![](asset/1w-50-50.png)
 
-
 ![](asset/1w-75-25.png)
 
 ### fptree查询效率低的原因
@@ -48,8 +48,6 @@ fptree叶子节点中的键值对是无序的，我们使用了fingerprint，在
 fptree中的fingerprint是否有存在的必要呢？
 
 ![](asset/200w-no-keyHash.png)
-
-
 
 ## 测试方法
 
