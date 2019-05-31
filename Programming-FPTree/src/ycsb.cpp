@@ -11,7 +11,7 @@ const string workload = "../workloads/"; // done: the workload folder filepath
 const string load = workload + "220w-rw-50-50-load.txt"; // TODO: the workload_load filename
 const string run  = workload + "220w-rw-50-50-run.txt"; // TODO: the workload_run filename
 
-const int READ_WRITE_NUM = 2200000; // TODO: amount of operations
+const int READ_WRITE_NUM = 350000; // TODO: amount of operations
 
 int main()
 {        
@@ -50,8 +50,7 @@ int main()
 
     // done: load the workload in the fptree
     int i;
-    for(i = 0; i < READ_WRITE_NUM; i++){
-        printf("key[%d] = %lu\n", i, key[i]);
+    for(i = 0; i < t; i++){
         if(op[i] == 0){
            fptree.insert(key[i],key[i]);
            inserted++;
@@ -130,6 +129,7 @@ int main()
                 break;
             case 2:
                 fptree.update(key[i],key[i]);
+                inserted++;
                 break;
             case 3:
                 Value value_temp = fptree.find(key[i]);
@@ -183,7 +183,7 @@ int main()
     clock_gettime(CLOCK_MONOTONIC, &start);
     // done: load the levelDB
     // DONE
-    for (i = 0; i < READ_WRITE_NUM; i++) {
+    for (i = 0; i < t; i++) {
         if (op[i] == 0) {
             status = db->Put(write_options, to_string(key[i]), to_string(key[i]));
             assert(status.ok());
@@ -237,7 +237,7 @@ int main()
     // DONE
      for (i = 0; i < operation_num; i++) {
     	//增其实就是改 因为key == value 
-        if (op[i] == 0 && op[i] == 2) {
+        if (op[i] == 0 || op[i] == 2) {
             status = db->Put(write_options, to_string(key[i]), to_string(key[i]));
             assert(status.ok());
             inserted++;
